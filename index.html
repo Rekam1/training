@@ -154,6 +154,17 @@
     .chevron{transition:transform 0.2s;color:var(--muted);flex-shrink:0;}
     .chevron.open{transform:rotate(90deg);}
 
+    /* Referenz / Pläne */
+    .ref-img-card{background:var(--card-bg);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;}
+    .ref-img-label{padding:12px 14px 0;font-size:13px;font-weight:700;color:var(--accent);}
+    .ref-img-sub{padding:2px 14px 10px;font-size:11px;color:var(--muted);}
+    .ref-img-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0 14px 14px;}
+    .ref-img-wrap img{width:100%;min-width:320px;border-radius:10px;display:block;cursor:zoom-in;}
+    /* Lightbox */
+    .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;align-items:center;justify-content:center;padding:16px;}
+    .lightbox.open{display:flex;}
+    .lightbox img{max-width:100%;max-height:90vh;border-radius:10px;object-fit:contain;}
+    .lightbox-close{position:absolute;top:max(16px,env(safe-area-inset-top));right:16px;font-size:28px;color:#fff;cursor:pointer;background:rgba(0,0,0,0.5);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;line-height:1;}
     /* Toast */
     .toast{position:fixed;bottom:calc(var(--nav-h) + 80px);left:50%;transform:translateX(-50%) translateY(16px);background:#1e293b;color:var(--text);border:1px solid var(--border);padding:10px 22px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;transition:opacity 0.2s,transform 0.2s;pointer-events:none;z-index:200;white-space:nowrap;}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -169,6 +180,7 @@
   <div class="tab-content">
     <section class="tab active" id="tab-training"></section>
     <section class="tab" id="tab-uebungen"></section>
+    <section class="tab" id="tab-referenz"></section>
     <section class="tab" id="tab-verlauf"></section>
     <section class="tab" id="tab-tipps"></section>
   </div>
@@ -181,6 +193,10 @@
     <button onclick="showTab('uebungen')" id="nav-uebungen">
       <svg viewBox="0 0 24 24"><rect x="2" y="3" width="6" height="4" rx="1"/><rect x="16" y="3" width="6" height="4" rx="1"/><path d="M8 5h8M1 5H2M22 5h1M5 7v10M19 7v10"/><rect x="2" y="17" width="6" height="4" rx="1"/><rect x="16" y="17" width="6" height="4" rx="1"/><path d="M8 19h8"/></svg>
       Übungen
+    </button>
+    <button onclick="showTab('referenz')" id="nav-referenz">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Pläne
     </button>
     <button onclick="showTab('verlauf')" id="nav-verlauf">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -209,6 +225,12 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-close" onclick="closeLightbox()">✕</div>
+  <img id="lightbox-img" src="" alt="Trainingsplan"/>
+</div>
 
 <script>
 // ============================================================
@@ -353,10 +375,11 @@ function showTab(name) {
   document.getElementById('tab-' + name).classList.add('active');
   document.getElementById('nav-' + name).classList.add('active');
   currentTab = name;
-  if (name === 'training') renderTraining();
-  if (name === 'uebungen') renderUebungen();
-  if (name === 'verlauf')  renderVerlauf();
-  if (name === 'tipps')    renderTipps();
+  if (name === 'training')  renderTraining();
+  if (name === 'uebungen')  renderUebungen();
+  if (name === 'referenz')  renderReferenz();
+  if (name === 'verlauf')   renderVerlauf();
+  if (name === 'tipps')     renderTipps();
 }
 
 // ============================================================
@@ -902,6 +925,40 @@ function renderTipps() {
       </div>
     </div>
   `;
+}
+
+// ============================================================
+// REFERENZ / PLÄNE TAB
+// ============================================================
+
+function renderReferenz() {
+  document.getElementById('header-sub').textContent = '4-Wochen Trainingspläne';
+  document.getElementById('tab-referenz').innerHTML = `
+    <div class="ref-img-card">
+      <div class="ref-img-label">📋 4-Wochen Plan – Rennradfahrer (mit Shaolin)</div>
+      <div class="ref-img-sub">Asiatische &amp; Shaolin-inspirierte Übungen &middot; Tippe für Vollansicht</div>
+      <div class="ref-img-wrap">
+        <img src="Training 2.png" alt="4-Wochen Trainingsplan" onclick="openLightbox('Training 2.png')" loading="lazy"/>
+      </div>
+    </div>
+    <div class="ref-img-card">
+      <div class="ref-img-label">🏋️ Übungsreferenz – Ausführung &amp; häufige Fehler</div>
+      <div class="ref-img-sub">Liegestütze, Band Rudern, Plank, Mountain Climbers, Dips &middot; Tippe für Vollansicht</div>
+      <div class="ref-img-wrap">
+        <img src="Training 1.png" alt="Übungsreferenz" onclick="openLightbox('Training 1.png')" loading="lazy"/>
+      </div>
+    </div>
+  `;
+}
+
+function openLightbox(src) {
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lightbox-img').src = src;
+  lb.classList.add('open');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
 }
 
 // ============================================================
