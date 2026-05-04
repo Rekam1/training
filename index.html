@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Training – Oberkörper</title>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#0f172a"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Training"/>
+  <style>
+    :root {
+      --bg:#0f172a; --text:#f8fafc; --muted:#94a3b8; --accent:#f97316;
+      --ok:#22c55e; --danger:#ef4444; --border:rgba(255,255,255,0.1);
+      --nav-h:64px; --card-bg:rgba(17,24,39,0.94);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;}
+    body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);overscroll-behavior:none;}
+    #app{display:flex;flex-direction:column;height:100vh;height:100dvh;}
+    .app-header{background:rgba(15,23,42,0.97);border-bottom:1px solid var(--border);padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));position:sticky;top:0;z-index:10;}
+    .app-header h1{font-size:20px;font-weight:800;color:var(--accent);}
+    .app-header .sub{font-size:13px;color:var(--muted);margin-top:2px;}
+    .tab-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px;padding-bottom:calc(var(--nav-h) + 24px);}
+    .bottom-nav{display:flex;background:rgba(17,24,39,0.98);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom);height:var(--nav-h);flex-shrink:0;}
+    .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--muted);font-size:8px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color 0.15s;}
+    .bottom-nav button.active{color:var(--accent);}
+    .bottom-nav button svg{width:20px;height:20px;stroke-width:2;fill:none;stroke:currentColor;}
+    .tab{display:none;}.tab.active{display:block;}
+
+    /* Cards */
+    .card{background:var(--card-bg);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px;}
+    .card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;}
+
+    /* Plan Selection */
+    .plan-card{border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;background:var(--card-bg);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color 0.15s,background 0.15s;}
+    .plan-card:active{background:rgba(17,24,39,1);}
+    .plan-header{display:flex;align-items:center;gap:12px;}
+    .plan-icon{font-size:28px;flex-shrink:0;}
+    .plan-name{font-size:16px;font-weight:800;}
+    .plan-desc{font-size:12px;color:var(--muted);margin-top:3px;}
+    .plan-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+    .plan-pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(249,115,22,0.1);color:var(--accent);border:1px solid rgba(249,115,22,0.3);}
+
+    /* Active Workout */
+    .workout-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+    .workout-title{font-size:18px;font-weight:800;}
+    .ex-card{border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;background:rgba(17,24,39,0.6);}
+    .ex-head{display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+    .ex-head:active{background:rgba(255,255,255,0.03);}
+    .ex-icon{font-size:22px;flex-shrink:0;}
+    .ex-name{font-size:15px;font-weight:700;flex:1;}
+    .ex-progress{font-size:12px;font-weight:700;color:var(--muted);}
+    .ex-progress.done-all{color:var(--ok);}
+    .ex-body{display:none;padding:0 14px 14px;}
+    .ex-body.open{display:block;}
+    .set-header-row{display:grid;grid-template-columns:24px 1fr 1fr 36px;gap:6px;margin-bottom:4px;padding-bottom:4px;}
+    .set-col-lbl{font-size:9px;color:var(--muted);text-align:center;font-weight:700;}
+    .set-row{display:grid;grid-template-columns:24px 1fr 1fr 36px;gap:6px;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+    .set-row:last-of-type{border-bottom:none;}
+    .set-num{font-size:13px;font-weight:700;color:var(--muted);text-align:center;}
+    .set-input{background:rgba(2,6,23,0.8);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 4px;font-size:14px;outline:none;font-family:inherit;width:100%;text-align:center;}
+    .set-input:focus{border-color:var(--accent);}
+    .set-input.done-inp{border-color:var(--ok);color:var(--ok);}
+    .set-done-btn{width:36px;height:36px;border-radius:10px;border:2px solid var(--border);background:none;color:var(--muted);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all 0.15s;}
+    .set-done-btn.done{background:var(--ok);border-color:var(--ok);color:#0f172a;}
+    .add-set-btn{margin-top:10px;padding:7px 14px;border-radius:999px;border:1px dashed var(--border);background:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;display:block;width:100%;}
+
+    /* Rest Timer */
+    .rest-banner{position:fixed;bottom:var(--nav-h);left:0;right:0;background:rgba(15,23,42,0.98);border-top:2px solid var(--accent);padding:10px 16px 12px;display:none;z-index:50;backdrop-filter:blur(12px);}
+    .rest-banner.visible{display:block;}
+    .rest-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+    .rest-row{display:flex;align-items:center;gap:10px;}
+    .rest-countdown{font-size:24px;font-weight:800;color:var(--accent);min-width:52px;}
+    .rest-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,0.1);border-radius:999px;overflow:hidden;}
+    .rest-bar-fill{height:100%;background:var(--accent);border-radius:999px;transition:width 0.95s linear;}
+    .rest-skip{padding:6px 14px;border-radius:999px;border:1px solid var(--border);background:none;color:var(--text);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;}
+    .rest-dur-btns{display:flex;gap:6px;margin-top:8px;}
+    .rest-dur-btn{flex:1;padding:5px;border-radius:999px;border:1px solid var(--border);background:none;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;transition:all 0.15s;}
+    .rest-dur-btn.sel{border-color:var(--accent);color:var(--accent);background:rgba(249,115,22,0.08);}
+
+    /* Exercise Library */
+    .filter-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:8px;-webkit-overflow-scrolling:touch;}
+    .filter-bar::-webkit-scrollbar{display:none;}
+    .filter-btn{padding:6px 13px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:all 0.15s;flex-shrink:0;}
+    .filter-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(249,115,22,0.1);}
+    .muscle-section{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.07em;margin:16px 0 8px;}
+    .muscle-section:first-child{margin-top:0;}
+    .lib-card{border:1px solid var(--border);border-radius:14px;margin-bottom:8px;overflow:hidden;background:rgba(17,24,39,0.6);}
+    .lib-head{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+    .lib-head:active{background:rgba(255,255,255,0.03);}
+    .lib-icon{font-size:20px;flex-shrink:0;}
+    .lib-name{font-size:14px;font-weight:700;flex:1;}
+    .lib-tag{font-size:11px;color:var(--muted);}
+    .lib-body{display:none;padding:0 14px 12px;}
+    .lib-body.open{display:block;}
+    .lib-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:8px;}
+    .lib-tip{background:rgba(249,115,22,0.07);border:1px solid rgba(249,115,22,0.2);border-radius:10px;padding:9px 11px;font-size:12px;color:#fed7aa;line-height:1.55;}
+    .lib-tip b{color:var(--accent);}
+    .ex-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+    .ex-pill{font-size:11px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,0.05);color:var(--muted);border:1px solid var(--border);}
+
+    /* Log */
+    .stat-row{display:flex;gap:8px;margin-bottom:14px;}
+    .stat-box{flex:1;background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center;}
+    .stat-val{font-size:20px;font-weight:800;color:var(--accent);}
+    .stat-lbl{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-top:2px;}
+    .log-empty{text-align:center;color:var(--muted);padding:50px 20px;font-size:15px;}
+    .log-card{border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;background:rgba(17,24,39,0.6);}
+    .log-head{display:flex;align-items:flex-start;gap:12px;padding:14px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+    .log-head:active{background:rgba(255,255,255,0.03);}
+    .log-date-block{background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:10px;padding:8px 10px;text-align:center;flex-shrink:0;min-width:46px;}
+    .log-day{font-size:18px;font-weight:800;color:var(--accent);line-height:1;}
+    .log-month{font-size:9px;font-weight:700;color:var(--accent);text-transform:uppercase;}
+    .log-info{flex:1;}
+    .log-plan-name{font-size:15px;font-weight:700;}
+    .log-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+    .log-stats{display:flex;gap:14px;margin-top:6px;}
+    .log-stat-val{font-size:15px;font-weight:800;color:var(--text);}
+    .log-stat-lbl{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;}
+    .log-body{display:none;padding:0 14px 12px;}
+    .log-body.open{display:block;}
+    .log-ex-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;}
+    .log-ex-row:last-child{border-bottom:none;}
+    .log-ex-detail{font-size:12px;color:var(--muted);}
+    .log-del-btn{font-size:13px;cursor:pointer;padding:4px;flex-shrink:0;}
+
+    /* Buttons */
+    .btn{display:block;width:100%;padding:14px 16px;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;text-align:center;font-family:inherit;-webkit-tap-highlight-color:transparent;transition:opacity 0.15s;}
+    .btn:active{opacity:0.85;}
+    .btn-primary{background:var(--accent);color:#fff;}
+    .btn-danger{background:rgba(239,68,68,0.12);color:var(--danger);border:1px solid rgba(239,68,68,0.3);}
+    .btn-ok{background:rgba(34,197,94,0.12);color:var(--ok);border:1px solid rgba(34,197,94,0.3);}
+    .btn-ghost{background:rgba(255,255,255,0.05);color:var(--muted);border:1px solid var(--border);}
+
+    /* Finish */
+    .finish-screen{text-align:center;padding:30px 20px;}
+    .finish-icon{font-size:64px;margin-bottom:16px;}
+    .finish-title{font-size:24px;font-weight:800;margin-bottom:6px;}
+    .finish-sub{font-size:14px;color:var(--muted);margin-bottom:24px;}
+    .finish-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:24px;}
+    .finish-stat{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:14px 8px;}
+    .finish-stat-val{font-size:22px;font-weight:800;color:var(--accent);}
+    .finish-stat-lbl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-top:3px;}
+
+    /* Tipps */
+    .tip-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px;}
+    .tip-title{font-size:14px;font-weight:800;margin-bottom:8px;}
+    .tip-text{font-size:13px;color:var(--muted);line-height:1.7;}
+    .tip-text b{color:var(--text);}
+
+    /* Chevron */
+    .chevron{transition:transform 0.2s;color:var(--muted);flex-shrink:0;}
+    .chevron.open{transform:rotate(90deg);}
+
+    /* Toast */
+    .toast{position:fixed;bottom:calc(var(--nav-h) + 80px);left:50%;transform:translateX(-50%) translateY(16px);background:#1e293b;color:var(--text);border:1px solid var(--border);padding:10px 22px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;transition:opacity 0.2s,transform 0.2s;pointer-events:none;z-index:200;white-space:nowrap;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  </style>
+</head>
+<body>
+<div id="app">
+  <header class="app-header">
+    <h1>💪 Training</h1>
+    <div class="sub" id="header-sub">Oberkörper Tracker</div>
+  </header>
+
+  <div class="tab-content">
+    <section class="tab active" id="tab-training"></section>
+    <section class="tab" id="tab-uebungen"></section>
+    <section class="tab" id="tab-verlauf"></section>
+    <section class="tab" id="tab-tipps"></section>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="active" onclick="showTab('training')" id="nav-training">
+      <svg viewBox="0 0 24 24"><path d="M6 4v16M18 4v16M6 12h12M3 8l3-4 3 4M15 8l3-4 3 4M3 16l3 4 3-4M15 16l3 4 3-4"/></svg>
+      Training
+    </button>
+    <button onclick="showTab('uebungen')" id="nav-uebungen">
+      <svg viewBox="0 0 24 24"><rect x="2" y="3" width="6" height="4" rx="1"/><rect x="16" y="3" width="6" height="4" rx="1"/><path d="M8 5h8M1 5H2M22 5h1M5 7v10M19 7v10"/><rect x="2" y="17" width="6" height="4" rx="1"/><rect x="16" y="17" width="6" height="4" rx="1"/><path d="M8 19h8"/></svg>
+      Übungen
+    </button>
+    <button onclick="showTab('verlauf')" id="nav-verlauf">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Verlauf
+    </button>
+    <button onclick="showTab('tipps')" id="nav-tipps">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Tipps
+    </button>
+  </nav>
+</div>
+
+<!-- Rest Timer Banner -->
+<div class="rest-banner" id="rest-banner">
+  <div class="rest-label">⏱️ Pause – nächster Satz in</div>
+  <div class="rest-row">
+    <div class="rest-countdown" id="rest-countdown">90</div>
+    <div class="rest-bar-wrap"><div class="rest-bar-fill" id="rest-bar" style="width:100%"></div></div>
+    <button class="rest-skip" onclick="skipRest()">Überspringen</button>
+  </div>
+  <div class="rest-dur-btns">
+    <button class="rest-dur-btn" onclick="setRestDur(60)">60s</button>
+    <button class="rest-dur-btn sel" onclick="setRestDur(90)">90s</button>
+    <button class="rest-dur-btn" onclick="setRestDur(120)">120s</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+
+const EXERCISES = [
+  // BRUST
+  { id:'bank', group:'brust', name:'Bankdrücken', icon:'🏋️', sets:4, reps:'6–8', note:'Flachbank · Langhantel',
+    desc:'Klassische Grundübung für die gesamte Brustmuskulatur. Schulterblätter zusammenziehen und aktiv auf die Bank drücken, leichte Wölbung im unteren Rücken.',
+    tip:'<b>Tipp:</b> Ellbogen nicht komplett ausflaren – ca. 45–70° zum Körper. Stange zur unteren Brusthöhe absenken, nicht zum Hals.' },
+  { id:'schraegbank', group:'brust', name:'Schrägbankdrücken', icon:'📐', sets:3, reps:'8–10', note:'30–45° · Kurzhantel oder Langhantel',
+    desc:'Betont den oberen Brustanteil (Pectoralis major, Clavicularportion). Wichtig für eine vollständige, runde Brustmuskulatur.',
+    tip:'<b>Tipp:</b> Hanteln über dem oberen Brustkorb absenken, nicht über den Schultern – schont die Schultergelenke erheblich.' },
+  { id:'butterfly', group:'brust', name:'Butterfly / Kabelzug Kreuzziehen', icon:'🦋', sets:3, reps:'12–15', note:'Maschine oder Kabel',
+    desc:'Isolationsübung für die Brustmuskulatur. Ideal als Finisher am Ende des Trainings für maximalen Pump und Dehnung.',
+    tip:'<b>Tipp:</b> Ellbogen leicht gebeugt halten. Im Endpunkt Brust bewusst anspannen und 1 Sekunde isometrisch halten.' },
+  { id:'dips-brust', group:'brust', name:'Dips (brustbetont)', icon:'⬇️', sets:3, reps:'max', note:'Oberkörper leicht nach vorne neigen',
+    desc:'Körpergewichtsübung die Brust, Schultern und Trizeps trifft. Durch Vorneigung des Oberkörpers mehr Betonung auf die Brust.',
+    tip:'<b>Tipp:</b> Weit genug absenken bis Schultern unter Ellbogenebene – maximale Dehnung der Brust. Breiter Griff verstärkt Brustaktivierung.' },
+
+  // SCHULTER
+  { id:'schulter-druecken', group:'schulter', name:'Schulterdrücken', icon:'🔺', sets:4, reps:'8–10', note:'Langhantel oder Kurzhantel · stehend oder sitzend',
+    desc:'Grundübung für den mittleren und vorderen Deltamuskel. Stehend (Militärpress) aktiviert zusätzlich den Core und Stabilisatoren.',
+    tip:'<b>Tipp:</b> Stange knapp vor dem Gesicht führen, nie hinter den Kopf – schützt den Nacken. Core aktiv anspannen beim stehenden Drücken.' },
+  { id:'seitheben', group:'schulter', name:'Seitheben', icon:'↔️', sets:3, reps:'12–15', note:'Kurzhantel oder Kabel · leichtes Gewicht',
+    desc:'Isolationsübung für den mittleren Deltakopf. Unverzichtbar für Schulterbreite und eine V-Form.',
+    tip:'<b>Tipp:</b> Kleiner Finger höher als Daumen (leichte Innenrotation). Nur bis Schulterhöhe heben – höher aktiviert Trapez statt Delta.' },
+  { id:'facepull', group:'schulter', name:'Face Pull', icon:'🎯', sets:3, reps:'15–20', note:'Kabel mit Tau · auf Ohrhöhe',
+    desc:'Stärkt den hinteren Deltakopf und die Rotatorenmanschette. Extrem wichtig für Schultergesundheit, Haltung und Verletzungsvorbeugung!',
+    tip:'<b>Tipp:</b> Seil zu den Ohren ziehen, Ellbogen hoch und weit. Im Endpunkt Schulterblätter aktiv zusammenkneifen und 1s halten.' },
+  { id:'arnold', group:'schulter', name:'Arnold Press', icon:'🌀', sets:3, reps:'10–12', note:'Kurzhantel · sitzend',
+    desc:'Von Arnold Schwarzenegger entwickelte Variante. Trainiert alle drei Deltaköpfe durch die Rotationsbewegung am Anfang und Ende.',
+    tip:'<b>Tipp:</b> Langsam und kontrolliert ausführen. Hanteln starten mit Handflächen zum Gesicht, drehen beim Drücken nach außen.' },
+
+  // RÜCKEN
+  { id:'klimmzuege', group:'ruecken', name:'Klimmzüge', icon:'🔝', sets:4, reps:'max', note:'Eigengewicht · Überhand- oder Neutralgriff',
+    desc:'König der Rückenübungen. Trainiert Latissimus, Bizeps, Trapez und Rhomboiden. Breiter Griff für mehr Breite, enger Griff für mehr Tiefe.',
+    tip:'<b>Tipp:</b> Schulterblätter zuerst nach unten deprimieren, dann ziehen. Brust zur Stange führen, nicht nur Kinn drüber. Volle Streckung unten!' },
+  { id:'latzug', group:'ruecken', name:'Latzug', icon:'⬇️', sets:4, reps:'8–12', note:'Maschine · breit oder eng',
+    desc:'Ideale Alternative oder Ergänzung zu Klimmzügen. Ermöglicht gezielte Gewichtsdosierung und ist auch für Einsteiger geeignet.',
+    tip:'<b>Tipp:</b> Stange IMMER zur Brust ziehen – NIE hinter den Kopf! Leicht zurücklehnen (ca. 10°) und zur Oberbrust führen.' },
+  { id:'rudern-lang', group:'ruecken', name:'Vorgebeugtes Rudern', icon:'🚣', sets:4, reps:'8–10', note:'Langhantel · 45° Rumpfwinkel',
+    desc:'Grundübung für die Rückendicke (Tiefenmuskulatur). Trainiert Trapez, Rhomboiden und Latissimus gleichzeitig.',
+    tip:'<b>Tipp:</b> Rücken immer gerade halten – niemals runden! Stange zur unteren Bauchnabe ziehen, Ellbogen eng am Körper.' },
+  { id:'seated-row', group:'ruecken', name:'Seated Row (Rudermaschine)', icon:'🪑', sets:3, reps:'10–12', note:'Kabelzug oder Maschine · enger Griff',
+    desc:'Gezieltes Training der mittleren Rückenmuskulatur und Rhomboiden. Gut für Verbesserung der Haltung.',
+    tip:'<b>Tipp:</b> Im Endpunkt Schulterblätter aktiv zusammendrücken und 1s halten. Oberkörper aufrecht, kein Wippen oder Schwung.' },
+
+  // BIZEPS
+  { id:'curl-lang', group:'bizeps', name:'Langhantelcurls', icon:'💪', sets:4, reps:'8–10', note:'EZ-Stange oder gerade Stange',
+    desc:'Grundübung für maximale Bizepskraft. Die bilaterale Ausführung ermöglicht schwere Gewichte und maximalen Wachstumsreiz.',
+    tip:'<b>Tipp:</b> Ellbogen bleiben fixiert an den Hüften – kein Schwung! Langsam ablassen in 3 Sekunden für mehr exzentrischen Reiz.' },
+  { id:'curl-kurz', group:'bizeps', name:'Kurzhantelcurls', icon:'🔁', sets:3, reps:'10–12', note:'Alternierend · sitzend oder stehend',
+    desc:'Ermöglicht volle Supination (Handflächendrehung) für maximale Bizepsaktivierung – besser als mit der Langhantel.',
+    tip:'<b>Tipp:</b> Im oberen Drittel die Hand aktiv nach außen drehen (supinieren). Kurze Pause mit maximaler Anspannung am Endpunkt.' },
+  { id:'hammer-curl', group:'bizeps', name:'Hammercurls', icon:'🔨', sets:3, reps:'10–12', note:'Kurzhantel · Neutralgriff (Daumen oben)',
+    desc:'Trainiert den Brachialis (unter dem Bizeps) und Brachioradialis – gibt dem Arm sichtbare Dicke und Fülle.',
+    tip:'<b>Tipp:</b> Daumen zeigt immer nach oben während der gesamten Bewegung. Langsam und kontrolliert, kein Schwung.' },
+  { id:'konzentration-curl', group:'bizeps', name:'Konzentrationscurls', icon:'🎯', sets:3, reps:'12–15', note:'Kurzhantel · sitzend, Ellbogen am Oberschenkel',
+    desc:'Maximale Isolation des Bizeps durch eliminierte Hilfsmuskeln. Entwickelt den Bizepspeak.',
+    tip:'<b>Tipp:</b> Ellbogen gegen den Oberschenkel stemmen und fixieren. Nur der Unterarm bewegt sich. Im Endpunkt hart kontrahieren.' },
+
+  // TRIZEPS
+  { id:'trizeps-kabel', group:'trizeps', name:'Trizepsdrücken Kabel', icon:'📉', sets:4, reps:'10–12', note:'Tau oder Stange · Kabelturm',
+    desc:'Isolationsübung für alle drei Trizepsköpfe. Gleichmäßige Spannung über den gesamten Bewegungsradius durch den Kabelzug.',
+    tip:'<b>Tipp:</b> Ellbogen fixiert an den Rippen, Oberarme senkrecht. Im Endpunkt Trizeps maximal anspannen. Tau: Hände beim Drücken auseinander.' },
+  { id:'dips-trizeps', group:'trizeps', name:'Dips (trizepsbetont)', icon:'💺', sets:3, reps:'max', note:'Körper aufrecht halten',
+    desc:'Körpergewichtsübung mit maximaler Trizepsbeteiligung. Durch aufrechte Haltung klarer Fokus auf den Trizeps.',
+    tip:'<b>Tipp:</b> Nicht zu weit absenken um Schultern zu schonen. Volle Streckung im Ellbogen für maximale Trizepsaktivierung.' },
+  { id:'skull-crusher', group:'trizeps', name:'Skull Crusher', icon:'💀', sets:3, reps:'10–12', note:'EZ-Stange oder Kurzhantel · Flachbank',
+    desc:'Trainiert besonders den langen Trizepskopf in der Dehnung. Sehr effektiv für Trizeps-Masse und Armumfang.',
+    tip:'<b>Tipp:</b> Stange zur Stirn/Nase absenken – nicht zu weit hinter den Kopf. Ellbogen nicht nach außen flaren während der Bewegung.' },
+  { id:'enges-bank', group:'trizeps', name:'Enges Bankdrücken', icon:'📏', sets:3, reps:'8–10', note:'Langhantel · schulterbreiter Griff',
+    desc:'Kombinationsübung für Trizeps und innere Brust. Erlaubt etwas schwerere Gewichte als reine Isolationsübungen.',
+    tip:'<b>Tipp:</b> Griff schulterbreit (zu eng belastet die Handgelenke). Ellbogen eng am Körper halten und zur Brust absenken.' },
+
+  // CORE
+  { id:'plank', group:'core', name:'Plank', icon:'➡️', sets:3, reps:'45–60s', note:'Ellbogen oder Hände · gerade Linie',
+    desc:'Isometrische Grundübung für die tiefe Core-Muskulatur. Stärkt die Rumpfstabilität, schützt die Wirbelsäule.',
+    tip:'<b>Tipp:</b> Po nicht hochstrecken oder durchhängen. Nabel aktiv zur Wirbelsäule einziehen. Körper wie ein Brett von Kopf bis Fersen.' },
+  { id:'crunch', group:'core', name:'Crunches', icon:'🌀', sets:3, reps:'15–20', note:'Kontrolliert · kein Schwung',
+    desc:'Isolationsübung für den geraden Bauchmuskel (Rectus abdominis). Langsam ausgeführt sehr effektiv.',
+    tip:'<b>Tipp:</b> Nur bis Schulterblätter vom Boden – keine vollständigen Sit-Ups. Hände locker an den Schläfen, nicht in den Nacken drücken.' },
+  { id:'russian-twist', group:'core', name:'Russian Twist', icon:'🔄', sets:3, reps:'20 total', note:'Mit oder ohne Gewicht · Füße angehoben',
+    desc:'Rotationsbewegung für den schrägen Bauchmuskel (Obliques). Sorgt für Taillendefinition.',
+    tip:'<b>Tipp:</b> Rücken leicht nach hinten neigen (ca. 45°). Bewusst mit dem Oberkörper drehen, nicht nur die Arme schwingen.' },
+  { id:'hanging-leg-raise', group:'core', name:'Hanging Leg Raise', icon:'🏃', sets:3, reps:'10–15', note:'An der Klimmzugstange',
+    desc:'Anspruchsvolle Core-Übung die den unteren Bauchbereich und Hüftbeuger stark aktiviert.',
+    tip:'<b>Tipp:</b> Beine kontrolliert anheben, nicht schwingen. Für Anfänger: erst mit angewinkelten Knien beginnen, dann gestreckte Beine.' },
+];
+
+const PLANS = {
+  push: {
+    name:'Push Day', icon:'🔥',
+    desc:'Brust · Schulter · Trizeps',
+    exercises:['bank','schraegbank','butterfly','schulter-druecken','seitheben','trizeps-kabel','dips-trizeps'],
+  },
+  pull: {
+    name:'Pull Day', icon:'💎',
+    desc:'Rücken · Bizeps',
+    exercises:['klimmzuege','latzug','rudern-lang','seated-row','facepull','curl-lang','hammer-curl'],
+  },
+  upper: {
+    name:'Oberkörper Komplett', icon:'⚡',
+    desc:'Push + Pull kombiniert',
+    exercises:['bank','klimmzuege','schulter-druecken','rudern-lang','seitheben','facepull','curl-kurz','trizeps-kabel','plank'],
+  },
+  arms: {
+    name:'Arm-Fokus', icon:'💪',
+    desc:'Bizeps & Trizeps Spezialtag',
+    exercises:['curl-lang','curl-kurz','hammer-curl','konzentration-curl','trizeps-kabel','dips-trizeps','skull-crusher'],
+  },
+};
+
+const MUSCLE_LABELS = { brust:'Brust', schulter:'Schulter', ruecken:'Rücken', bizeps:'Bizeps', trizeps:'Trizeps', core:'Core' };
+const MUSCLE_ICONS  = { brust:'🫀', schulter:'🔺', ruecken:'🏔️', bizeps:'💪', trizeps:'📉', core:'⚙️' };
+
+// ============================================================
+// STATE
+// ============================================================
+
+let currentTab   = 'training';
+let session      = null;
+let restInterval = null;
+let restRemaining= 0;
+let restDuration = 90;
+let sessionElapsed  = 0;
+let sessionInterval = null;
+let libFilter = 'all';
+
+let trainingLog = [];
+try { trainingLog = JSON.parse(localStorage.getItem('training-log') || '[]'); } catch(e) {}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  currentTab = name;
+  if (name === 'training') renderTraining();
+  if (name === 'uebungen') renderUebungen();
+  if (name === 'verlauf')  renderVerlauf();
+  if (name === 'tipps')    renderTipps();
+}
+
+// ============================================================
+// TRAINING TAB
+// ============================================================
+
+function renderTraining() {
+  const el = document.getElementById('tab-training');
+  if (!session)            { renderPlanSelection(el); return; }
+  if (session.finished)    { renderFinishScreen(el);  return; }
+  renderActiveWorkout(el);
+}
+
+function renderPlanSelection(el) {
+  document.getElementById('header-sub').textContent = 'Wähle deinen Trainingsplan';
+  let html = '';
+
+  if (trainingLog.length > 0) {
+    const last    = trainingLog[0];
+    const d       = new Date(last.date);
+    const dayDiff = Math.floor((Date.now() - d) / 86400000);
+    const dayStr  = dayDiff === 0 ? 'Heute' : dayDiff === 1 ? 'Gestern' : `vor ${dayDiff} Tagen`;
+    html += `<div class="card" style="margin-bottom:16px;background:rgba(249,115,22,0.05);border-color:rgba(249,115,22,0.2)">
+      <div class="card-title">Letztes Training</div>
+      <div style="font-size:15px;font-weight:700">${last.planName}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:3px">${dayStr} &middot; ${last.duration}min &middot; ${last.totalSets} Sätze</div>
+    </div>`;
+  }
+
+  html += '<div class="card-title">Trainingsplan wählen</div>';
+
+  for (const [key, plan] of Object.entries(PLANS)) {
+    const exNames = plan.exercises
+      .map(id => EXERCISES.find(e => e.id === id))
+      .filter(Boolean)
+      .map(e => e.name);
+    const preview = exNames.slice(0, 5);
+    const more    = exNames.length > 5 ? exNames.length - 5 : 0;
+    html += `<div class="plan-card" onclick="startSession('${key}')">
+      <div class="plan-header">
+        <div class="plan-icon">${plan.icon}</div>
+        <div>
+          <div class="plan-name">${plan.name}</div>
+          <div class="plan-desc">${plan.desc} &middot; ${plan.exercises.length} Übungen</div>
+        </div>
+      </div>
+      <div class="plan-pills">
+        ${preview.map(n => `<span class="plan-pill">${n}</span>`).join('')}
+        ${more ? `<span class="plan-pill">+${more} weitere</span>` : ''}
+      </div>
+    </div>`;
+  }
+
+  html += `<div style="text-align:center;color:var(--muted);font-size:12px;padding:12px 0">
+    Tippe auf einen Plan um das Training zu starten
+  </div>`;
+  el.innerHTML = html;
+}
+
+function startSession(planKey) {
+  const plan = PLANS[planKey];
+  const exercises = plan.exercises.map((id, mapIdx) => {
+    const ex = EXERCISES.find(e => e.id === id);
+    if (!ex) return null;
+    const sets = [];
+    for (let i = 0; i < ex.sets; i++) {
+      sets.push({ weight: '', reps: '', done: false });
+    }
+    return { ...ex, sessionSets: sets, open: mapIdx === 0 };
+  }).filter(Boolean);
+
+  session = { planKey, planName: plan.name, exercises, startTime: Date.now(), finished: false };
+  sessionElapsed = 0;
+  clearInterval(sessionInterval);
+  sessionInterval = setInterval(() => { sessionElapsed++; updateSessionTimer(); }, 1000);
+
+  renderTraining();
+  showToast(`${plan.icon} ${plan.name} gestartet!`);
+}
+
+function updateSessionTimer() {
+  const el = document.getElementById('session-timer');
+  if (!el) return;
+  const m = Math.floor(sessionElapsed / 60);
+  const s = sessionElapsed % 60;
+  el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function renderActiveWorkout(el) {
+  const plan     = PLANS[session.planKey];
+  const totalSets= session.exercises.reduce((s, e) => s + e.sessionSets.length, 0);
+  const doneSets = session.exercises.reduce((s, e) => s + e.sessionSets.filter(st => st.done).length, 0);
+  const pct      = totalSets > 0 ? Math.round(doneSets / totalSets * 100) : 0;
+
+  document.getElementById('header-sub').textContent = `${plan.icon} ${plan.name} läuft`;
+
+  let html = `<div class="workout-header">
+    <div>
+      <div class="workout-title">${plan.icon} ${plan.name}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">${doneSets}/${totalSets} Sätze &middot; ${pct}%</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:20px;font-weight:800;color:var(--accent)" id="session-timer">0:00</div>
+      <div style="font-size:10px;color:var(--muted)">Dauer</div>
+    </div>
+  </div>
+  <div style="height:6px;background:rgba(255,255,255,0.08);border-radius:999px;overflow:hidden;margin-bottom:16px">
+    <div style="height:100%;width:${pct}%;background:var(--ok);border-radius:999px;transition:width 0.4s"></div>
+  </div>`;
+
+  session.exercises.forEach((ex, exIdx) => {
+    const doneCnt = ex.sessionSets.filter(s => s.done).length;
+    const allDone = doneCnt === ex.sessionSets.length;
+
+    html += `<div class="ex-card">
+      <div class="ex-head" onclick="toggleEx(${exIdx})">
+        <div class="ex-icon">${ex.icon}</div>
+        <div style="flex:1">
+          <div class="ex-name">${ex.name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:1px">${ex.sets} Sätze &middot; ${ex.reps} Wdh.</div>
+        </div>
+        <div class="ex-progress${allDone ? ' done-all' : ''}">${doneCnt}/${ex.sessionSets.length}</div>
+        <svg class="chevron${ex.open ? ' open' : ''}" viewBox="0 0 24 24" width="16" height="16" stroke-width="2" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="ex-body${ex.open ? ' open' : ''}">
+        <div class="set-header-row">
+          <div></div>
+          <div class="set-col-lbl">KG</div>
+          <div class="set-col-lbl">WDH.</div>
+          <div></div>
+        </div>
+        ${ex.sessionSets.map((st, stIdx) => `
+        <div class="set-row">
+          <div class="set-num">${stIdx + 1}</div>
+          <input class="set-input${st.done ? ' done-inp' : ''}" type="number" inputmode="decimal" placeholder="kg"
+            value="${st.weight}" onchange="updateSet(${exIdx},${stIdx},'weight',this.value)"${st.done ? ' readonly' : ''}/>
+          <input class="set-input${st.done ? ' done-inp' : ''}" type="number" inputmode="numeric" placeholder="Wdh"
+            value="${st.reps}" onchange="updateSet(${exIdx},${stIdx},'reps',this.value)"${st.done ? ' readonly' : ''}/>
+          <button class="set-done-btn${st.done ? ' done' : ''}" onclick="toggleSet(${exIdx},${stIdx})">
+            ${st.done ? '✓' : '○'}
+          </button>
+        </div>`).join('')}
+        <button class="add-set-btn" onclick="addSet(${exIdx})">+ Satz hinzufügen</button>
+      </div>
+    </div>`;
+  });
+
+  html += `<div style="margin-top:16px;display:flex;flex-direction:column;gap:10px">
+    ${pct >= 100
+      ? `<button class="btn btn-ok" onclick="finishWorkout()">🏆 Training abschließen</button>`
+      : `<button class="btn btn-ok" onclick="finishWorkout()">✅ Training beenden & speichern</button>`}
+    <button class="btn btn-danger" onclick="confirmAbort()">Training abbrechen</button>
+  </div>`;
+
+  el.innerHTML = html;
+  updateSessionTimer();
+}
+
+function toggleEx(idx) {
+  session.exercises[idx].open = !session.exercises[idx].open;
+  renderActiveWorkout(document.getElementById('tab-training'));
+}
+
+function updateSet(exIdx, stIdx, field, value) {
+  session.exercises[exIdx].sessionSets[stIdx][field] = value;
+}
+
+function toggleSet(exIdx, stIdx) {
+  const set = session.exercises[exIdx].sessionSets[stIdx];
+  set.done = !set.done;
+
+  if (set.done) {
+    const ex      = session.exercises[exIdx];
+    const allDone = ex.sessionSets.every(s => s.done);
+    if (allDone && exIdx + 1 < session.exercises.length) {
+      session.exercises[exIdx + 1].open = true;
+    }
+    startRest();
+  } else {
+    stopRest();
+  }
+  renderActiveWorkout(document.getElementById('tab-training'));
+}
+
+function addSet(exIdx) {
+  session.exercises[exIdx].sessionSets.push({ weight: '', reps: '', done: false });
+  session.exercises[exIdx].open = true;
+  renderActiveWorkout(document.getElementById('tab-training'));
+}
+
+function confirmAbort() {
+  if (confirm('Training wirklich abbrechen? Keine Daten werden gespeichert.')) {
+    clearInterval(sessionInterval);
+    sessionInterval = null;
+    stopRest();
+    session = null;
+    renderTraining();
+    showToast('Training abgebrochen');
+  }
+}
+
+function finishWorkout() {
+  clearInterval(sessionInterval);
+  sessionInterval = null;
+  stopRest();
+
+  const duration = Math.round(sessionElapsed / 60);
+  let totalVolume = 0;
+  let totalSets   = 0;
+
+  const exerciseSummary = session.exercises.map(ex => {
+    const doneSets = ex.sessionSets.filter(s => s.done);
+    let vol = 0;
+    doneSets.forEach(s => {
+      vol += (parseFloat(s.weight) || 0) * (parseInt(s.reps) || 0);
+    });
+    totalVolume += vol;
+    totalSets   += doneSets.length;
+    return {
+      name:   ex.name,
+      icon:   ex.icon,
+      sets:   doneSets.length,
+      volume: vol,
+      detail: doneSets.map(s => `${s.weight || '—'}kg×${s.reps || '—'}`).join(', '),
+    };
+  });
+
+  const logEntry = {
+    id:          Date.now(),
+    date:        new Date().toISOString(),
+    planKey:     session.planKey,
+    planName:    session.planName,
+    duration,
+    totalSets,
+    totalVolume,
+    exercises:   exerciseSummary,
+  };
+
+  trainingLog.unshift(logEntry);
+  if (trainingLog.length > 100) trainingLog = trainingLog.slice(0, 100);
+  localStorage.setItem('training-log', JSON.stringify(trainingLog));
+
+  session.finished = true;
+  session.stats    = { duration, totalSets, totalVolume, exerciseSummary };
+  renderTraining();
+}
+
+function renderFinishScreen(el) {
+  document.getElementById('header-sub').textContent = 'Training abgeschlossen! 🎉';
+  const { duration, totalSets, totalVolume } = session.stats;
+  const volStr = totalVolume >= 1000
+    ? (totalVolume / 1000).toFixed(1) + 't'
+    : totalVolume + 'kg';
+
+  el.innerHTML = `<div class="finish-screen">
+    <div class="finish-icon">🏆</div>
+    <div class="finish-title">Stark gemacht!</div>
+    <div class="finish-sub">${session.planName} abgeschlossen</div>
+    <div class="finish-stats">
+      <div class="finish-stat">
+        <div class="finish-stat-val">${duration}</div>
+        <div class="finish-stat-lbl">Minuten</div>
+      </div>
+      <div class="finish-stat">
+        <div class="finish-stat-val">${totalSets}</div>
+        <div class="finish-stat-lbl">Sätze</div>
+      </div>
+      <div class="finish-stat">
+        <div class="finish-stat-val">${volStr}</div>
+        <div class="finish-stat-lbl">Volumen</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="margin-bottom:12px" onclick="newWorkout()">Neues Training starten</button>
+    <button class="btn btn-ghost" onclick="showTab('verlauf')">📊 Verlauf ansehen</button>
+  </div>`;
+}
+
+function newWorkout() {
+  session = null;
+  renderTraining();
+}
+
+// ============================================================
+// REST TIMER
+// ============================================================
+
+function startRest() {
+  stopRest();
+  restRemaining = restDuration;
+  updateRestBanner();
+  document.getElementById('rest-banner').classList.add('visible');
+  updateRestDurButtons();
+
+  restInterval = setInterval(() => {
+    restRemaining--;
+    if (restRemaining <= 0) {
+      stopRest();
+      showToast('💪 Pause vorbei – nächster Satz!');
+      if ('vibrate' in navigator) navigator.vibrate([200, 100, 200]);
+    } else {
+      updateRestBanner();
+    }
+  }, 1000);
+}
+
+function updateRestBanner() {
+  const cd  = document.getElementById('rest-countdown');
+  const bar = document.getElementById('rest-bar');
+  if (cd)  cd.textContent = restRemaining;
+  if (bar) bar.style.width = (restRemaining / restDuration * 100) + '%';
+}
+
+function stopRest() {
+  clearInterval(restInterval);
+  restInterval = null;
+  document.getElementById('rest-banner').classList.remove('visible');
+}
+
+function skipRest() { stopRest(); }
+
+function setRestDur(sec) {
+  restDuration  = sec;
+  restRemaining = sec;
+  updateRestBanner();
+  updateRestDurButtons();
+}
+
+function updateRestDurButtons() {
+  document.querySelectorAll('.rest-dur-btn').forEach(btn => {
+    const match = parseInt(btn.textContent) === restDuration;
+    btn.classList.toggle('sel', match);
+  });
+}
+
+// ============================================================
+// ÜBUNGEN TAB
+// ============================================================
+
+function renderUebungen() {
+  const el = document.getElementById('tab-uebungen');
+  const filters = ['all','brust','schulter','ruecken','bizeps','trizeps','core'];
+  const fLabels = { all:'Alle', brust:'Brust', schulter:'Schulter', ruecken:'Rücken', bizeps:'Bizeps', trizeps:'Trizeps', core:'Core' };
+
+  let html = `<div class="filter-bar">
+    ${filters.map(f => `<button class="filter-btn${libFilter === f ? ' active' : ''}" onclick="filterLib('${f}')">${fLabels[f]}</button>`).join('')}
+  </div>`;
+
+  const grouped = {};
+  EXERCISES.forEach(ex => {
+    if (libFilter !== 'all' && ex.group !== libFilter) return;
+    if (!grouped[ex.group]) grouped[ex.group] = [];
+    grouped[ex.group].push(ex);
+  });
+
+  for (const [group, exes] of Object.entries(grouped)) {
+    html += `<div class="muscle-section">${MUSCLE_ICONS[group]} ${MUSCLE_LABELS[group]}</div>`;
+    exes.forEach(ex => {
+      html += `<div class="lib-card">
+        <div class="lib-head" onclick="toggleLib('${ex.id}')">
+          <div class="lib-icon">${ex.icon}</div>
+          <div style="flex:1">
+            <div class="lib-name">${ex.name}</div>
+            <div class="lib-tag">${ex.sets} Sätze &middot; ${ex.reps} Wdh.</div>
+          </div>
+          <svg class="chevron" id="lib-chev-${ex.id}" viewBox="0 0 24 24" width="16" height="16" stroke-width="2" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="lib-body" id="lib-body-${ex.id}">
+          <div class="ex-pills">
+            <span class="ex-pill">${MUSCLE_LABELS[ex.group]}</span>
+            <span class="ex-pill">${ex.sets} Sätze</span>
+            <span class="ex-pill">${ex.reps} Wdh.</span>
+          </div>
+          <div class="lib-desc">${ex.desc}</div>
+          <div class="lib-tip">${ex.tip}</div>
+          ${ex.note ? `<div style="font-size:11px;color:var(--muted);margin-top:8px;font-style:italic">📍 ${ex.note}</div>` : ''}
+        </div>
+      </div>`;
+    });
+  }
+
+  el.innerHTML = html;
+}
+
+function filterLib(f) {
+  libFilter = f;
+  renderUebungen();
+}
+
+function toggleLib(id) {
+  const body = document.getElementById('lib-body-' + id);
+  const chev = document.getElementById('lib-chev-' + id);
+  if (body) body.classList.toggle('open');
+  if (chev) chev.classList.toggle('open');
+}
+
+// ============================================================
+// VERLAUF TAB
+// ============================================================
+
+function renderVerlauf() {
+  const el = document.getElementById('tab-verlauf');
+
+  if (trainingLog.length === 0) {
+    el.innerHTML = `<div class="log-empty">
+      <div style="font-size:48px;margin-bottom:12px">📋</div>
+      <div style="font-weight:700;margin-bottom:6px">Noch kein Training aufgezeichnet</div>
+      <div style="font-size:13px">Starte deinen ersten Trainingsplan!</div>
+    </div>`;
+    return;
+  }
+
+  const totalWorkouts = trainingLog.length;
+  const totalVol      = trainingLog.reduce((s, l) => s + (l.totalVolume || 0), 0);
+  const avgDur        = Math.round(trainingLog.reduce((s, l) => s + (l.duration || 0), 0) / totalWorkouts);
+  const volStr        = totalVol >= 1000 ? (totalVol / 1000).toFixed(1) + 't' : totalVol + 'kg';
+
+  let html = `<div class="stat-row">
+    <div class="stat-box"><div class="stat-val">${totalWorkouts}</div><div class="stat-lbl">Trainings</div></div>
+    <div class="stat-box"><div class="stat-val">${volStr}</div><div class="stat-lbl">Gesamtvolumen</div></div>
+    <div class="stat-box"><div class="stat-val">${avgDur}min</div><div class="stat-lbl">Ø Dauer</div></div>
+  </div>`;
+
+  trainingLog.forEach((entry, idx) => {
+    const d       = new Date(entry.date);
+    const day     = d.getDate().toString().padStart(2, '0');
+    const month   = d.toLocaleString('de', { month: 'short' });
+    const weekday = d.toLocaleString('de', { weekday: 'short' });
+    const entryVol = entry.totalVolume >= 1000
+      ? (entry.totalVolume / 1000).toFixed(1) + 't'
+      : (entry.totalVolume || 0) + 'kg';
+
+    html += `<div class="log-card">
+      <div class="log-head" onclick="toggleLog(${idx})">
+        <div class="log-date-block">
+          <div class="log-day">${day}</div>
+          <div class="log-month">${month}</div>
+        </div>
+        <div class="log-info">
+          <div class="log-plan-name">${entry.planName}</div>
+          <div class="log-meta">${weekday} &middot; ${entry.duration}min &middot; ${entry.totalSets} Sätze</div>
+          <div class="log-stats">
+            <div>
+              <div class="log-stat-val">${entryVol}</div>
+              <div class="log-stat-lbl">Volumen</div>
+            </div>
+            <div>
+              <div class="log-stat-val">${(entry.exercises || []).length}</div>
+              <div class="log-stat-lbl">Übungen</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+          <svg class="chevron" id="log-chev-${idx}" viewBox="0 0 24 24" width="16" height="16" stroke-width="2" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="log-del-btn" onclick="event.stopPropagation();deleteLog(${idx})">🗑️</span>
+        </div>
+      </div>
+      <div class="log-body" id="log-body-${idx}">
+        ${(entry.exercises || []).map(ex => `
+        <div class="log-ex-row">
+          <div>${ex.icon || ''} ${ex.name}</div>
+          <div class="log-ex-detail">${ex.sets} Sätze &middot; ${ex.detail ? ex.detail.split(', ').slice(0,3).join(', ') : '—'}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+function toggleLog(idx) {
+  const body = document.getElementById('log-body-' + idx);
+  const chev = document.getElementById('log-chev-' + idx);
+  if (body) body.classList.toggle('open');
+  if (chev) chev.classList.toggle('open');
+}
+
+function deleteLog(idx) {
+  if (confirm('Diesen Eintrag löschen?')) {
+    trainingLog.splice(idx, 1);
+    localStorage.setItem('training-log', JSON.stringify(trainingLog));
+    renderVerlauf();
+    showToast('Eintrag gelöscht');
+  }
+}
+
+// ============================================================
+// TIPPS TAB
+// ============================================================
+
+function renderTipps() {
+  document.getElementById('tab-tipps').innerHTML = `
+    <div class="tip-card">
+      <div class="tip-title">🏋️ Grundprinzipien des Krafttrainings</div>
+      <div class="tip-text">
+        <b>Progressive Überlastung:</b> Steigere jede Woche das Gewicht, die Wiederholungen oder Sätze. Ohne Steigerung kein Wachstum.<br><br>
+        <b>Mind-Muscle-Connection:</b> Stell dir vor, du zerreißt etwas mit dem Muskel – bewusst anspannen, nicht nur die Stange bewegen.<br><br>
+        <b>Voller Bewegungsumfang:</b> Immer im vollständigen ROM ausführen. Halbe Bewegungen = halbe Ergebnisse.
+      </div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-title">⏱️ Optimale Pausenzeiten</div>
+      <div class="tip-text">
+        <b>Kraft (1–5 Wdh.):</b> 3–5 Minuten Pause<br>
+        <b>Hypertrophie (6–12 Wdh.):</b> 60–120 Sekunden<br>
+        <b>Ausdauer (13+ Wdh.):</b> 30–60 Sekunden<br><br>
+        Für Grundübungen (Bankdrücken, Klimmzüge) mindestens 90–120s einhalten. Zu kurze Pausen reduzieren die Leistung dramatisch.
+      </div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-title">🍗 Ernährung für Muskelaufbau</div>
+      <div class="tip-text">
+        <b>Protein:</b> 1.6–2.2g pro kg Körpergewicht täglich, gleichmäßig auf alle Mahlzeiten verteilen.<br>
+        <b>Kalorienüberschuss:</b> +200–300 kcal täglich für sauberen Muskelaufbau ohne übermäßige Fettzunahme.<br>
+        <b>Post-Workout:</b> Mahlzeit oder Shake innerhalb von 1–2 Stunden nach dem Training.<br>
+        <b>Wasser:</b> Mindestens 3 Liter täglich – mehr an Trainingstagen.
+      </div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-title">😴 Erholung & Regeneration</div>
+      <div class="tip-text">
+        <b>Schlaf:</b> 7–9 Stunden sind essentiell. Wachstumshormone werden ausschließlich im Schlaf ausgeschüttet.<br>
+        <b>Muskelkater:</b> DOMS (delayed onset muscle soreness) = normales Zeichen. Leichtes Cardio hilft mehr als vollständige Ruhe.<br>
+        <b>Trainingsfrequenz:</b> Push-/Pull-Muskeln brauchen 48–72h Erholung – Push/Pull-Split ist optimal.<br>
+        <b>Deload:</b> Alle 4–6 Wochen eine leichtere Woche mit 50–60% des Gewichts einplanen.
+      </div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-title">📐 Schultergesundheit</div>
+      <div class="tip-text">
+        <b>Face Pulls:</b> Nach jedem Push-Tag 3×15 Face Pulls – die wichtigste Präventivübung für die Schulter.<br>
+        <b>Push/Pull-Ratio:</b> Gleich viel oder mehr Zugvolumen als Druckvolumen. Zu viel Drücken ohne Gegengewicht = Schulterprobleme.<br>
+        <b>Aufwärmen:</b> Niemals kalt mit schwerem Gewicht beginnen. Immer 2 Aufwärmsätze mit 50–60% des Arbeitsgewichts.
+      </div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-title">💡 Über diese App</div>
+      <div class="tip-text">
+        Oberkörper Trainer · PWA · Offline-fähig<br>
+        Alle Daten werden lokal auf diesem Gerät gespeichert.<br><br>
+        <b>Pläne:</b> Push Day, Pull Day, Oberkörper Komplett, Arm-Fokus<br>
+        <b>Übungsbibliothek:</b> ${EXERCISES.length} Übungen mit Ausführungstipps<br>
+        <b>Features:</b> Satz-Tracker, Pausen-Timer (60/90/120s), Trainingslog mit Statistik
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+
+let toastTimeout;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+renderTraining();
+renderTipps();
+</script>
+</body>
+</html>
