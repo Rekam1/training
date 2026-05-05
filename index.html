@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Training – Oberkörper</title>
+  <title>Training – Rennradfahrer</title>
   <link rel="manifest" href="manifest.json"/>
   <meta name="theme-color" content="#0f172a"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -175,8 +175,8 @@
 <body>
 <div id="app">
   <header class="app-header">
-    <h1>💪 Training</h1>
-    <div class="sub" id="header-sub">Oberkörper Tracker</div>
+    <h1>🚴 Training</h1>
+    <div class="sub" id="header-sub">Rennradfahrer Oberkörper</div>
   </header>
 
   <div class="tab-content">
@@ -239,142 +239,156 @@
 // DATA
 // ============================================================
 
-const BASE_IMG = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
 const EXERCISES = [
-  // BRUST
-  { id:'bank', group:'brust', name:'Bankdrücken', icon:'🏋️', sets:4, reps:'6–8', note:'Flachbank · Langhantel',
-    img: BASE_IMG + 'Barbell_Bench_Press_-_Medium_Grip/0.jpg',
-    desc:'Klassische Grundübung für die gesamte Brustmuskulatur. Schulterblätter zusammenziehen und aktiv auf die Bank drücken, leichte Wölbung im unteren Rücken.',
-    tip:'<b>Tipp:</b> Ellbogen nicht komplett ausflaren – ca. 45–70° zum Körper. Stange zur unteren Brusthöhe absenken, nicht zum Hals.' },
-  { id:'schraegbank', group:'brust', name:'Schrägbankdrücken', icon:'📐', sets:3, reps:'8–10', note:'30–45° · Kurzhantel oder Langhantel',
-    img: BASE_IMG + 'Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg',
-    desc:'Betont den oberen Brustanteil (Pectoralis major, Clavicularportion). Wichtig für eine vollständige, runde Brustmuskulatur.',
-    tip:'<b>Tipp:</b> Hanteln über dem oberen Brustkorb absenken, nicht über den Schultern – schont die Schultergelenke erheblich.' },
-  { id:'butterfly', group:'brust', name:'Butterfly / Kabelzug Kreuzziehen', icon:'🦋', sets:3, reps:'12–15', note:'Maschine oder Kabel',
-    img: BASE_IMG + 'Cable_Fly/0.jpg',
-    desc:'Isolationsübung für die Brustmuskulatur. Ideal als Finisher am Ende des Trainings für maximalen Pump und Dehnung.',
-    tip:'<b>Tipp:</b> Ellbogen leicht gebeugt halten. Im Endpunkt Brust bewusst anspannen und 1 Sekunde isometrisch halten.' },
-  { id:'dips-brust', group:'brust', name:'Dips (brustbetont)', icon:'⬇️', sets:3, reps:'max', note:'Oberkörper leicht nach vorne neigen',
-    img: BASE_IMG + 'Chest_Dip/0.jpg',
-    desc:'Körpergewichtsübung die Brust, Schultern und Trizeps trifft. Durch Vorneigung des Oberkörpers mehr Betonung auf die Brust.',
-    tip:'<b>Tipp:</b> Weit genug absenken bis Schultern unter Ellbogenebene – maximale Dehnung der Brust. Breiter Griff verstärkt Brustaktivierung.' },
+  // PUSH – Drücken (Körpergewicht)
+  { id:'liegestuetze', group:'push', name:'Liegestütze', icon:'💪', sets:3, reps:'10–12', note:'Hände etwas breiter als Schulter · Ellbogen 45° zum Körper',
+    desc:'Die Kernübung für Brust, Schultern und Trizeps. Körper bleibt gerade wie ein Brett von Kopf bis Fersen. Brust Richtung Boden.',
+    tip:'<b>Tipp:</b> Ellbogen ca. 45° zum Körper – nicht ausflaren. Häufiger Fehler: Hüfte hängt durch oder Po ist zu hoch.' },
+  { id:'enge-liegestuetze', group:'push', name:'Enge Liegestütze (Trizeps)', icon:'🔺', sets:3, reps:'12–15', note:'Hände eng unter der Brust · Ellbogen nah am Körper',
+    desc:'Trizeps-Fokus durch engen Griff. Ellbogen bleiben eng am Körper während der gesamten Bewegung. Arme vollständig strecken.',
+    tip:'<b>Tipp:</b> Körper gerade halten, langsam und kontrolliert absenken (3 Sekunden runter). Mehr Trizeps-Aktivierung als normale Liegestütze.' },
+  { id:'decline-liegestuetze', group:'push', name:'Decline Push-Ups (Füsse erhöht)', icon:'📐', sets:4, reps:'8–12', note:'Füsse auf Stuhl oder Bank · Brust Richtung Boden',
+    desc:'Erhöhte Füsse verschieben den Fokus auf den oberen Brustbereich und die Schultern. Explosiv hochdrücken für mehr Intensität.',
+    tip:'<b>Tipp:</b> Explosiv hochdrücken, sanft und kontrolliert absenken. Körper immer gerade wie ein Brett.' },
+  { id:'plyo-liegestuetze', group:'push', name:'Plyo / Explosiv Push-Ups', icon:'👏', sets:4, reps:'6–10', note:'Explosiv abheben · Fortgeschritten',
+    desc:'Explosives Hochdrücken mit Abheben der Hände (mit oder ohne Klatschen). Trainiert Schnellkraft und Reaktionsfähigkeit.',
+    tip:'<b>Tipp:</b> Sanft landen und sofort in die nächste Wiederholung. Für Einsteiger: erst explosive Push-Ups ohne Klatschen üben.' },
+  { id:'shaolin-pushup', group:'push', name:'Shaolin Push-Up', icon:'🥋', sets:3, reps:'8–10 / Seite', note:'Breit starten · Gewicht zu einer Seite verlagern · tief gehen',
+    desc:'Shaolin-Variante: Breiter Liegestützstand, Gewicht einseitig verlagern und tief gehen. Einseitiges Training für Kraft und Körperkontrolle.',
+    tip:'<b>Tipp:</b> Langsam und kontrolliert ausführen. Kontrolle wichtiger als Geschwindigkeit. Schulterblätter tief halten.' },
+  { id:'dips-stuhl', group:'push', name:'Dips (Stuhl / Sofa)', icon:'🪑', sets:3, reps:'8–15', note:'Hände auf stabiler Kante · Ellbogen nach hinten',
+    desc:'Trizeps-Dips ohne Gym – jede stabile Stuhllehne oder Sofakante funktioniert. Schultern unten halten, Ellbogen nach hinten.',
+    tip:'<b>Tipp:</b> Ellbogen ca. 90° beugen, nicht zu weit außen flaren. Häufiger Fehler: Schultern hochziehen oder zu wenig Tiefe.' },
+  { id:'plank-rotation', group:'push', name:'Plank Rotation / Side-to-Side', icon:'🔄', sets:3, reps:'10–12 / Seite', note:'Aus dem Liegestützplan rotieren · Arm zur Decke',
+    desc:'Aus der Liegestützposition den Körper zur Seite drehen und den Arm zur Decke strecken. Trainiert Brust, Schulter und Core gleichzeitig.',
+    tip:'<b>Tipp:</b> Hüfte oben halten während der Rotation. Kontrolliert drehen, nicht schwingen. Atme beim Drehen aus.' },
+  { id:'shoulder-taps', group:'push', name:'Shoulder Taps', icon:'👆', sets:3, reps:'15–20 / Seite', note:'Liegestützposition · abwechselnd Schulter antippen',
+    desc:'In der Liegestützposition abwechselnd mit der Hand die gegenüberliegende Schulter antippen. Core und Schulter-Stabilität.',
+    tip:'<b>Tipp:</b> Hüfte möglichst ruhig halten – nicht schaukeln. Je langsamer, desto schwieriger. Füsse etwas breiter für mehr Stabilität.' },
 
-  // SCHULTER
-  { id:'schulter-druecken', group:'schulter', name:'Schulterdrücken', icon:'🔺', sets:4, reps:'8–10', note:'Langhantel oder Kurzhantel · stehend oder sitzend',
-    img: BASE_IMG + 'Barbell_Shoulder_Press/0.jpg',
-    desc:'Grundübung für den mittleren und vorderen Deltamuskel. Stehend (Militärpress) aktiviert zusätzlich den Core und Stabilisatoren.',
-    tip:'<b>Tipp:</b> Stange knapp vor dem Gesicht führen, nie hinter den Kopf – schützt den Nacken. Core aktiv anspannen beim stehenden Drücken.' },
-  { id:'seitheben', group:'schulter', name:'Seitheben', icon:'↔️', sets:3, reps:'12–15', note:'Kurzhantel oder Kabel · leichtes Gewicht',
-    img: BASE_IMG + 'Dumbbell_Lateral_Raise/0.jpg',
-    desc:'Isolationsübung für den mittleren Deltakopf. Unverzichtbar für Schulterbreite und eine V-Form.',
-    tip:'<b>Tipp:</b> Kleiner Finger höher als Daumen (leichte Innenrotation). Nur bis Schulterhöhe heben – höher aktiviert Trapez statt Delta.' },
-  { id:'facepull', group:'schulter', name:'Face Pull', icon:'🎯', sets:3, reps:'15–20', note:'Kabel mit Tau · auf Ohrhöhe',
-    img: BASE_IMG + 'Face_Pull/0.jpg',
-    desc:'Stärkt den hinteren Deltakopf und die Rotatorenmanschette. Extrem wichtig für Schultergesundheit, Haltung und Verletzungsvorbeugung!',
-    tip:'<b>Tipp:</b> Seil zu den Ohren ziehen, Ellbogen hoch und weit. Im Endpunkt Schulterblätter aktiv zusammenkneifen und 1s halten.' },
-  { id:'arnold', group:'schulter', name:'Arnold Press', icon:'🌀', sets:3, reps:'10–12', note:'Kurzhantel · sitzend',
-    img: BASE_IMG + 'Arnold_Dumbbell_Press/0.jpg',
-    desc:'Von Arnold Schwarzenegger entwickelte Variante. Trainiert alle drei Deltaköpfe durch die Rotationsbewegung am Anfang und Ende.',
-    tip:'<b>Tipp:</b> Langsam und kontrolliert ausführen. Hanteln starten mit Handflächen zum Gesicht, drehen beim Drücken nach außen.' },
-
-  // RÜCKEN
-  { id:'klimmzuege', group:'ruecken', name:'Klimmzüge', icon:'🔝', sets:4, reps:'max', note:'Eigengewicht · Überhand- oder Neutralgriff',
-    img: BASE_IMG + 'Pullup/0.jpg',
-    desc:'König der Rückenübungen. Trainiert Latissimus, Bizeps, Trapez und Rhomboiden. Breiter Griff für mehr Breite, enger Griff für mehr Tiefe.',
-    tip:'<b>Tipp:</b> Schulterblätter zuerst nach unten deprimieren, dann ziehen. Brust zur Stange führen, nicht nur Kinn drüber. Volle Streckung unten!' },
-  { id:'latzug', group:'ruecken', name:'Latzug', icon:'⬇️', sets:4, reps:'8–12', note:'Maschine · breit oder eng',
-    img: BASE_IMG + 'Wide-Grip_Lat_Pulldown/0.jpg',
-    desc:'Ideale Alternative oder Ergänzung zu Klimmzügen. Ermöglicht gezielte Gewichtsdosierung und ist auch für Einsteiger geeignet.',
-    tip:'<b>Tipp:</b> Stange IMMER zur Brust ziehen – NIE hinter den Kopf! Leicht zurücklehnen (ca. 10°) und zur Oberbrust führen.' },
-  { id:'rudern-lang', group:'ruecken', name:'Vorgebeugtes Rudern', icon:'🚣', sets:4, reps:'8–10', note:'Langhantel · 45° Rumpfwinkel',
-    img: BASE_IMG + 'Bent_Over_Barbell_Row/0.jpg',
-    desc:'Grundübung für die Rückendicke (Tiefenmuskulatur). Trainiert Trapez, Rhomboiden und Latissimus gleichzeitig.',
-    tip:'<b>Tipp:</b> Rücken immer gerade halten – niemals runden! Stange zur unteren Bauchnabe ziehen, Ellbogen eng am Körper.' },
-  { id:'seated-row', group:'ruecken', name:'Seated Row (Rudermaschine)', icon:'🪑', sets:3, reps:'10–12', note:'Kabelzug oder Maschine · enger Griff',
-    img: BASE_IMG + 'Seated_Cable_Rows/0.jpg',
-    desc:'Gezieltes Training der mittleren Rückenmuskulatur und Rhomboiden. Gut für Verbesserung der Haltung.',
-    tip:'<b>Tipp:</b> Im Endpunkt Schulterblätter aktiv zusammendrücken und 1s halten. Oberkörper aufrecht, kein Wippen oder Schwung.' },
-
-  // BIZEPS
-  { id:'curl-lang', group:'bizeps', name:'Langhantelcurls', icon:'💪', sets:4, reps:'8–10', note:'EZ-Stange oder gerade Stange',
-    img: BASE_IMG + 'Barbell_Curl/0.jpg',
-    desc:'Grundübung für maximale Bizepskraft. Die bilaterale Ausführung ermöglicht schwere Gewichte und maximalen Wachstumsreiz.',
-    tip:'<b>Tipp:</b> Ellbogen bleiben fixiert an den Hüften – kein Schwung! Langsam ablassen in 3 Sekunden für mehr exzentrischen Reiz.' },
-  { id:'curl-kurz', group:'bizeps', name:'Kurzhantelcurls', icon:'🔁', sets:3, reps:'10–12', note:'Alternierend · sitzend oder stehend',
-    img: BASE_IMG + 'Dumbbell_Alternate_Bicep_Curl/0.jpg',
-    desc:'Ermöglicht volle Supination (Handflächendrehung) für maximale Bizepsaktivierung – besser als mit der Langhantel.',
-    tip:'<b>Tipp:</b> Im oberen Drittel die Hand aktiv nach außen drehen (supinieren). Kurze Pause mit maximaler Anspannung am Endpunkt.' },
-  { id:'hammer-curl', group:'bizeps', name:'Hammercurls', icon:'🔨', sets:3, reps:'10–12', note:'Kurzhantel · Neutralgriff (Daumen oben)',
-    img: BASE_IMG + 'Hammer_Curls_v._2/0.jpg',
-    desc:'Trainiert den Brachialis (unter dem Bizeps) und Brachioradialis – gibt dem Arm sichtbare Dicke und Fülle.',
-    tip:'<b>Tipp:</b> Daumen zeigt immer nach oben während der gesamten Bewegung. Langsam und kontrolliert, kein Schwung.' },
-  { id:'konzentration-curl', group:'bizeps', name:'Konzentrationscurls', icon:'🎯', sets:3, reps:'12–15', note:'Kurzhantel · sitzend, Ellbogen am Oberschenkel',
-    img: BASE_IMG + 'Concentration_Curls/0.jpg',
-    desc:'Maximale Isolation des Bizeps durch eliminierte Hilfsmuskeln. Entwickelt den Bizepspeak.',
-    tip:'<b>Tipp:</b> Ellbogen gegen den Oberschenkel stemmen und fixieren. Nur der Unterarm bewegt sich. Im Endpunkt hart kontrahieren.' },
-
-  // TRIZEPS
-  { id:'trizeps-kabel', group:'trizeps', name:'Trizepsdrücken Kabel', icon:'📉', sets:4, reps:'10–12', note:'Tau oder Stange · Kabelturm',
-    img: BASE_IMG + 'Pushdown/0.jpg',
-    desc:'Isolationsübung für alle drei Trizepsköpfe. Gleichmäßige Spannung über den gesamten Bewegungsradius durch den Kabelzug.',
-    tip:'<b>Tipp:</b> Ellbogen fixiert an den Rippen, Oberarme senkrecht. Im Endpunkt Trizeps maximal anspannen. Tau: Hände beim Drücken auseinander.' },
-  { id:'dips-trizeps', group:'trizeps', name:'Dips (trizepsbetont)', icon:'💺', sets:3, reps:'max', note:'Körper aufrecht halten',
-    img: BASE_IMG + 'Triceps_Dip/0.jpg',
-    desc:'Körpergewichtsübung mit maximaler Trizepsbeteiligung. Durch aufrechte Haltung klarer Fokus auf den Trizeps.',
-    tip:'<b>Tipp:</b> Nicht zu weit absenken um Schultern zu schonen. Volle Streckung im Ellbogen für maximale Trizepsaktivierung.' },
-  { id:'skull-crusher', group:'trizeps', name:'Skull Crusher', icon:'💀', sets:3, reps:'10–12', note:'EZ-Stange oder Kurzhantel · Flachbank',
-    img: BASE_IMG + 'EZ-Bar_Skullcrusher/0.jpg',
-    desc:'Trainiert besonders den langen Trizepskopf in der Dehnung. Sehr effektiv für Trizeps-Masse und Armumfang.',
-    tip:'<b>Tipp:</b> Stange zur Stirn/Nase absenken – nicht zu weit hinter den Kopf. Ellbogen nicht nach außen flaren während der Bewegung.' },
-  { id:'enges-bank', group:'trizeps', name:'Enges Bankdrücken', icon:'📏', sets:3, reps:'8–10', note:'Langhantel · schulterbreiter Griff',
-    img: BASE_IMG + 'Close-Grip_Barbell_Bench_Press/0.jpg',
-    desc:'Kombinationsübung für Trizeps und innere Brust. Erlaubt etwas schwerere Gewichte als reine Isolationsübungen.',
-    tip:'<b>Tipp:</b> Griff schulterbreit (zu eng belastet die Handgelenke). Ellbogen eng am Körper halten und zur Brust absenken.' },
+  // PULL – Ziehen / Rücken
+  { id:'band-rudern', group:'pull', name:'Band Rudern (Rows)', icon:'🎯', sets:3, reps:'12–20', note:'Widerstandsband · Rücken gerade · Schulterblätter zusammen',
+    desc:'Band um einen festen Punkt befestigen (Türklinke, Pfeiler) und rudern. Trainiert Rücken, Bizeps und hintere Schulter – perfekt gegen Rundrücken vom Radfahren.',
+    tip:'<b>Tipp:</b> Rücken gerade, Ellbogen nach hinten ziehen, Schulterblätter aktiv zusammendrücken. Häufiger Fehler: Rücken rund oder Schultern nach vorne.' },
+  { id:'einarmiges-band-rudern', group:'pull', name:'Einarmiges Band Rudern', icon:'🎗️', sets:3, reps:'12–15 / Arm', note:'Pro Arm · ISO-Halten für mehr Intensität',
+    desc:'Einseitiges Rudern mit dem Band. Mehr Stabilisationsanforderung, gleicht Ungleichgewichte zwischen den Seiten aus.',
+    tip:'<b>Tipp:</b> Einarmig ziehen, Ellbogen nah am Körper, Schulterblatt aktiv zusammenziehen. ISO-Variante: 2 Sekunden oben halten.' },
+  { id:'body-rows', group:'pull', name:'Body Rows (Tischrudern)', icon:'🚪', sets:3, reps:'10–15', note:'Unter einem stabilen Tisch · oder Türrahmen-Rows',
+    desc:'Unter einem stabilen Tisch liegend hochziehen. Hervorragende Zug-Übung ohne Gym. Körper gerade wie ein Brett halten.',
+    tip:'<b>Tipp:</b> Brust zum Tisch ziehen, nicht nur Arme beugen. Schulterblätter aktiv zusammenkneifen im Endpunkt.' },
+  { id:'superman', group:'pull', name:'Superman', icon:'🦸', sets:3, reps:'12–15', note:'Bauchlage · Arme und Beine gleichzeitig heben · 2s halten',
+    desc:'In Bauchlage Arme und Beine gleichzeitig heben. Stärkt die gesamte Rückenstreckmuskulatur – wichtig gegen Radfahrer-Rundrücken.',
+    tip:'<b>Tipp:</b> Im Endpunkt 2 Sekunden halten. Langsam und kontrolliert, kein Schwung. Blick bleibt nach unten.' },
+  { id:'full-arch', group:'pull', name:'Full Arch / Rückenbogen', icon:'🌈', sets:3, reps:'10–12', note:'Bauchlage · Arme und Beine maximal anheben',
+    desc:'Intensivere Rückenstrecker-Variante. Maximaler Bogen in Bauchlage. Besonders gut gegen Rundrücken vom Radfahren.',
+    tip:'<b>Tipp:</b> Langsam anheben, Spannung im unteren und mittleren Rücken bewusst spüren. Nicht ruckartig.' },
+  { id:'alt-arm-leg', group:'pull', name:'Alt. Arm/Bein Streckung', icon:'⚖️', sets:3, reps:'10 / Seite', note:'Vierfüsslerstand · Gegenüberliegend strecken · Becken stabil',
+    desc:'Im Vierfüsslerstand gegenüberliegendes Arm/Bein-Paar strecken und halten. Trainiert Rücken, Core und Gleichgewicht gleichzeitig.',
+    tip:'<b>Tipp:</b> Becken stabil halten – nicht kippen. Langsam strecken, kurz halten, kontrolliert zurückführen.' },
+  { id:'bridges', group:'pull', name:'Brücke (Glute Bridge)', icon:'🌉', sets:3, reps:'15–20', note:'Rückenlage · Hüfte hochdrücken · oben anspannen',
+    desc:'Hüfte aus der Rückenlage hochdrücken und oben aktiv anspannen. Stärkt Gesäß und unteren Rücken – direkt relevant für Radfahrer.',
+    tip:'<b>Tipp:</b> Oben 2 Sekunden halten und Gesäß maximal anspannen. Einbeinig für mehr Intensität.' },
 
   // CORE
-  { id:'plank', group:'core', name:'Plank', icon:'➡️', sets:3, reps:'45–60s', note:'Ellbogen oder Hände · gerade Linie',
-    img: BASE_IMG + 'Plank/0.jpg',
-    desc:'Isometrische Grundübung für die tiefe Core-Muskulatur. Stärkt die Rumpfstabilität, schützt die Wirbelsäule.',
-    tip:'<b>Tipp:</b> Po nicht hochstrecken oder durchhängen. Nabel aktiv zur Wirbelsäule einziehen. Körper wie ein Brett von Kopf bis Fersen.' },
-  { id:'crunch', group:'core', name:'Crunches', icon:'🌀', sets:3, reps:'15–20', note:'Kontrolliert · kein Schwung',
-    img: BASE_IMG + 'Crunches/0.jpg',
-    desc:'Isolationsübung für den geraden Bauchmuskel (Rectus abdominis). Langsam ausgeführt sehr effektiv.',
-    tip:'<b>Tipp:</b> Nur bis Schulterblätter vom Boden – keine vollständigen Sit-Ups. Hände locker an den Schläfen, nicht in den Nacken drücken.' },
-  { id:'russian-twist', group:'core', name:'Russian Twist', icon:'🔄', sets:3, reps:'20 total', note:'Mit oder ohne Gewicht · Füße angehoben',
-    img: BASE_IMG + 'Russian_Twist/0.jpg',
-    desc:'Rotationsbewegung für den schrägen Bauchmuskel (Obliques). Sorgt für Taillendefinition.',
-    tip:'<b>Tipp:</b> Rücken leicht nach hinten neigen (ca. 45°). Bewusst mit dem Oberkörper drehen, nicht nur die Arme schwingen.' },
-  { id:'hanging-leg-raise', group:'core', name:'Hanging Leg Raise', icon:'🏃', sets:3, reps:'10–15', note:'An der Klimmzugstange',
-    img: BASE_IMG + 'Hanging_Leg_Raise/0.jpg',
-    desc:'Anspruchsvolle Core-Übung die den unteren Bauchbereich und Hüftbeuger stark aktiviert.',
-    tip:'<b>Tipp:</b> Beine kontrolliert anheben, nicht schwingen. Für Anfänger: erst mit angewinkelten Knien beginnen, dann gestreckte Beine.' },
+  { id:'plank', group:'core', name:'Plank (Unterarmstütz)', icon:'➡️', sets:3, reps:'20–30s', note:'Unterarme am Boden · Ellbogen unter Schulter · Blick nach unten',
+    desc:'Die wichtigste Core-Übung für Rennradfahrer. Stärkt die tiefe Rumpfmuskulatur. Bauch und Gesäß aktiv anspannen.',
+    tip:'<b>Tipp:</b> Körper gerade halten. Häufiger Fehler: Hohlkreuz oder Po zu hoch. Nabel zur Wirbelsäule einziehen.' },
+  { id:'seitenplank', group:'core', name:'Seitenplank', icon:'↗️', sets:3, reps:'20–40s / Seite', note:'Unterarm am Boden · Körper bildet eine gerade Linie',
+    desc:'Seitliche Core-Stabilität für Radfahrer. Trainiert die schräge Bauchmuskulatur und seitliche Rumpfstabilisatoren.',
+    tip:'<b>Tipp:</b> Hüfte nicht absinken lassen. Fortgeschritten: oberes Bein heben oder Drehbewegung einbauen.' },
+  { id:'hollow-hold', group:'core', name:'Hollow Hold', icon:'🍌', sets:4, reps:'20–30s', note:'Rücken am Boden · Arme und Beine gestreckt knapp über dem Boden',
+    desc:'Turner-Grundübung für maximale Core-Spannung. Lendenwirbelsäule muss flach am Boden bleiben – das ist entscheidend.',
+    tip:'<b>Tipp:</b> Wenn Rücken sich hebt: Knie anwinkeln (leichtere Variante). Erst Kontrolle, dann Intensität steigern.' },
+  { id:'dragon-flag', group:'core', name:'Dragon Flag', icon:'🐉', sets:4, reps:'3–6 / oder 10–30s halten', note:'An einer Bank oder Tischkante · Negativ oder halten',
+    desc:'Fortgeschrittene Core-Übung. Gestreckt bleiben, Hüfte hochziehen, langsam absenken. Maximale Core-Anspannung.',
+    tip:'<b>Tipp:</b> Erst als Negativ-Übung (nur absenken) lernen, dann volle Wiederholungen. Core maximal anspannen – immer.' },
+  { id:'plank-walkout', group:'core', name:'Plank Walkout', icon:'🚶', sets:4, reps:'8–10', note:'Aus dem Stand vorwärts · Core gespannt · kontrolliert zurück',
+    desc:'Aus dem Stand vorwärts laufen bis in Plank-Position, kurz halten, kontrolliert zurücklaufen. Hervorragend für Core und Schultern.',
+    tip:'<b>Tipp:</b> Core immer gespannt halten. Hüfte nicht durchhängen lassen beim Vorwärtsgehen.' },
+  { id:'bicycle-crunch', group:'core', name:'Bicycle Crunches', icon:'🚲', sets:3, reps:'20–30 gesamt', note:'Kontrolliert · kein Schwung · Schulterblätter heben',
+    desc:'Abwechselnd Ellbogen zum gegenüberliegenden Knie. Trainiert gerade und schräge Bauchmuskeln gleichzeitig.',
+    tip:'<b>Tipp:</b> Langsam und kontrolliert ausführen – nicht schnell schwingen. Schulterblätter heben, nicht nur den Kopf.' },
+  { id:'flutter-kicks', group:'core', name:'Flutter Kicks', icon:'🦵', sets:3, reps:'20–30s', note:'Rückenlage · Beine knapp über dem Boden · abwechselnd',
+    desc:'In Rückenlage Beine abwechselnd auf und ab bewegen. Aktiviert den unteren Bauchbereich und Hüftbeuger intensiv.',
+    tip:'<b>Tipp:</b> Lendenwirbelsäule flach am Boden halten. Je tiefer die Beine gehalten werden, desto intensiver.' },
+  { id:'leg-raises', group:'core', name:'Leg Raises', icon:'🏃', sets:3, reps:'10–15', note:'Rückenlage · gestreckte Beine · kontrolliert absenken',
+    desc:'Gestreckte Beine von der Matte heben und kontrolliert absenken. Für unteren Bauchbereich und Hüftbeuger.',
+    tip:'<b>Tipp:</b> Beine langsam absenken – nicht fallen lassen. Rücken bleibt flach auf dem Boden.' },
+  { id:'reverse-crunch', group:'core', name:'Reverse Crunches', icon:'🔃', sets:3, reps:'12–15', note:'Rückenlage · Knie zur Brust rollen · kontrolliert',
+    desc:'Knie aus der Rückenlage zur Brust rollen. Aktiviert den unteren Bauchbereich stärker als normale Crunches.',
+    tip:'<b>Tipp:</b> Nicht schwingen – kontrollierte Bewegung. Rücken bleibt am Boden. Kurz oben anhalten.' },
+  { id:'star-plank', group:'core', name:'Star Plank', icon:'⭐', sets:3, reps:'10–12 / Seite', note:'Liegestützposition · Arm oder Bein heben · stabil bleiben',
+    desc:'Aus der Liegestützposition abwechselnd Arm und/oder Bein heben. Hohe Stabilisationsanforderung für den Core.',
+    tip:'<b>Tipp:</b> Becken stabil halten, nicht kippen oder drehen. Kurz im Endpunkt halten. Langsam = schwieriger.' },
+
+  // CARDIO & SHAOLIN
+  { id:'mountain-climbers', group:'shaolin', name:'Mountain Climbers', icon:'🏔️', sets:3, reps:'20 (10/10)', note:'Start in Liegestützposition · Knie abwechselnd zur Brust',
+    desc:'Abwechselnd Knie zur Brust in der Liegestützposition. Kombiniert Core-Stabilität mit Cardio. Tempo anpassen für mehr oder weniger Intensität.',
+    tip:'<b>Tipp:</b> Po nicht hochstrecken. Häufiger Fehler: Zu schnell und unkontrolliert. Kontrolle und Tempo finden.' },
+  { id:'burpee', group:'shaolin', name:'Burpee', icon:'⚡', sets:4, reps:'8–12', note:'Ohne Sprung für Einsteiger · mit Sprung für Fortgeschrittene',
+    desc:'Ganzkörperübung mit maximaler Kalorienverbrennung. Aus dem Stand in Liegestütz, Push-Up, zurück und Sprung.',
+    tip:'<b>Tipp:</b> Saubere Technik wichtiger als Geschwindigkeit. Rücken beim Liegestütz immer gerade. Ohne Sprung = Einstiegsvariante.' },
+  { id:'tiger-crawl', group:'shaolin', name:'Tiger Crawl', icon:'🐯', sets:4, reps:'20–30s', note:'Auf Händen und Füssen · Knie knapp über dem Boden',
+    desc:'Aus dem Shaolin-Training: auf allen Vieren kriechen mit Knien knapp über dem Boden. Trainiert Core, Schultern und Koordination.',
+    tip:'<b>Tipp:</b> Knie nah am Boden aber nicht aufsetzen. Je langsamer, desto schwieriger. Gangart aktiv und bewusst halten.' },
+  { id:'high-knees', group:'shaolin', name:'High Knees', icon:'🦵', sets:3, reps:'30–45s', note:'Knie hoch zur Hüfte · Arme mitschwingen · aufrecht bleiben',
+    desc:'Knie abwechselnd hoch zur Hüfte heben. Cardio-Übung die gleichzeitig den Core aktiviert. Gut zur Erwärmung.',
+    tip:'<b>Tipp:</b> Oberkörper aufrecht halten, nicht vorbeugen. Arme aktiv mitschwingen erhöht den Kalorienverbrauch.' },
+  { id:'shaolin-squat', group:'shaolin', name:'Shaolin Squat (Horse Stance)', icon:'🐴', sets:3, reps:'20–30s halten', note:'Füsse weit auseinander · Knie über Zehen · tief und stabil',
+    desc:'Grundübung des Shaolin-Trainings. Breiter Stand, tief in die Hocke gehen und Position halten. Trainiert Gleichgewicht, Körperspannung und mentale Stärke.',
+    tip:'<b>Tipp:</b> Rücken gerade, Knie über den Zehen. Je tiefer, desto intensiver. Progressiv länger halten.' },
+  { id:'pistol-squat', group:'shaolin', name:'Pistol Squat (Einbein-Kniebeuge)', icon:'🎯', sets:3, reps:'5–8 / Bein', note:'Ein Bein gestreckt · Gleichgewicht halten · Progression: erst mit Stütze',
+    desc:'Fortgeschrittene Einbein-Kniebeuge aus dem Shaolin-Training. Maximale Kraft und Balance auf einem Bein.',
+    tip:'<b>Tipp:</b> Mit Stütze (Türrahmen) beginnen. Knie so tief wie möglich. Arme vorne ausbalancieren. Geduld – dauert Wochen zu lernen.' },
+  { id:'turning-kicks', group:'shaolin', name:'Turning Kicks / Drehkick', icon:'🥋', sets:3, reps:'10–15 / Seite', note:'Aus dem Stand · kontrolliert · Gleichgewicht auf einem Bein',
+    desc:'Seitlicher Drehtritt aus dem Stand. Aus dem Shaolin/Kampfkunst-Training. Trainiert Gleichgewicht, Hüftmobilität und Koordination.',
+    tip:'<b>Tipp:</b> Langsam und kontrolliert ausführen. Qualität vor Quantität. Gleichgewicht auf dem Standbein bewusst halten.' },
+  { id:'punches', group:'shaolin', name:'Schattenboxen', icon:'🥊', sets:3, reps:'30–45s', note:'Aus dem Kampfkunst-Stand · Arme aktiv · Core gespannt',
+    desc:'Schnelle Schlagkombinationen in die Luft. Aus dem Kampfkunst-Training – trainiert Schultern, Core, Ausdauer und Koordination.',
+    tip:'<b>Tipp:</b> Core während der gesamten Zeit angespannt halten. Aus den Schultern schlagen, nicht nur die Arme bewegen. Atmen!' },
 ];
 
 const PLANS = {
-  push: {
-    name:'Push Day', icon:'🔥',
-    desc:'Brust · Schulter · Trizeps',
-    exercises:['bank','schraegbank','butterfly','schulter-druecken','seitheben','trizeps-kabel','dips-trizeps'],
+  woche1: {
+    name:'Woche 1 – Einstieg',
+    icon:'🌱',
+    desc:'Technik & Gewöhnung · 20–30 Min.',
+    exercises:['liegestuetze','band-rudern','plank','mountain-climbers','shaolin-squat'],
   },
-  pull: {
-    name:'Pull Day', icon:'💎',
-    desc:'Rücken · Bizeps',
-    exercises:['klimmzuege','latzug','rudern-lang','seated-row','facepull','curl-lang','hammer-curl'],
+  woche2: {
+    name:'Woche 2 – Volumen',
+    icon:'📈',
+    desc:'Volumen steigern · 20–30 Min.',
+    exercises:['enge-liegestuetze','einarmiges-band-rudern','seitenplank','mountain-climbers','shaolin-pushup'],
   },
-  upper: {
-    name:'Oberkörper Komplett', icon:'⚡',
-    desc:'Push + Pull kombiniert',
-    exercises:['bank','klimmzuege','schulter-druecken','rudern-lang','seitheben','facepull','curl-kurz','trizeps-kabel','plank'],
+  woche3: {
+    name:'Woche 3 – Intensität',
+    icon:'🔥',
+    desc:'Intensität erhöhen · 20–30 Min.',
+    exercises:['decline-liegestuetze','einarmiges-band-rudern','hollow-hold','burpee','dragon-flag'],
   },
-  arms: {
-    name:'Arm-Fokus', icon:'💪',
-    desc:'Bizeps & Trizeps Spezialtag',
-    exercises:['curl-lang','curl-kurz','hammer-curl','konzentration-curl','trizeps-kabel','dips-trizeps','skull-crusher'],
+  woche4: {
+    name:'Woche 4 – Meisterschaft',
+    icon:'🏆',
+    desc:'Meisterschaft & Kontrolle · 20–30 Min.',
+    exercises:['plyo-liegestuetze','einarmiges-band-rudern','plank-walkout','tiger-crawl','pistol-squat'],
+  },
+  quickburn: {
+    name:'Quick Burn (15 Min.)',
+    icon:'⚡',
+    desc:'Schnelle Fettverbrennung · ohne Geräte',
+    exercises:['high-knees','mountain-climbers','burpee','bicycle-crunch','flutter-kicks','plank'],
+  },
+  shaolin: {
+    name:'Shaolin Flow',
+    icon:'🥋',
+    desc:'Asiatische Übungen · Kontrolle & Balance',
+    exercises:['shaolin-squat','shaolin-pushup','tiger-crawl','dragon-flag','turning-kicks','pistol-squat','punches'],
   },
 };
 
-const MUSCLE_LABELS = { brust:'Brust', schulter:'Schulter', ruecken:'Rücken', bizeps:'Bizeps', trizeps:'Trizeps', core:'Core' };
-const MUSCLE_ICONS  = { brust:'🫀', schulter:'🔺', ruecken:'🏔️', bizeps:'💪', trizeps:'📉', core:'⚙️' };
+const MUSCLE_LABELS = { push:'Drücken', pull:'Ziehen / Rücken', core:'Core / Bauch', shaolin:'Cardio & Shaolin' };
+const MUSCLE_ICONS  = { push:'💪', pull:'🔙', core:'⚙️', shaolin:'🔥' };
 
 // ============================================================
 // STATE
@@ -748,8 +762,8 @@ function updateRestDurButtons() {
 
 function renderUebungen() {
   const el = document.getElementById('tab-uebungen');
-  const filters = ['all','brust','schulter','ruecken','bizeps','trizeps','core'];
-  const fLabels = { all:'Alle', brust:'Brust', schulter:'Schulter', ruecken:'Rücken', bizeps:'Bizeps', trizeps:'Trizeps', core:'Core' };
+  const filters = ['all','push','pull','core','shaolin'];
+  const fLabels = { all:'Alle', push:'Drücken', pull:'Ziehen/Rücken', core:'Core', shaolin:'Cardio & Shaolin' };
 
   let html = `<div class="filter-bar">
     ${filters.map(f => `<button class="filter-btn${libFilter === f ? ' active' : ''}" onclick="filterLib('${f}')">${fLabels[f]}</button>`).join('')}
@@ -901,56 +915,67 @@ function deleteLog(idx) {
 function renderTipps() {
   document.getElementById('tab-tipps').innerHTML = `
     <div class="tip-card">
-      <div class="tip-title">🏋️ Grundprinzipien des Krafttrainings</div>
+      <div class="tip-title">🚴 Training neben dem Velofahren</div>
       <div class="tip-text">
-        <b>Progressive Überlastung:</b> Steigere jede Woche das Gewicht, die Wiederholungen oder Sätze. Ohne Steigerung kein Wachstum.<br><br>
-        <b>Mind-Muscle-Connection:</b> Stell dir vor, du zerreißt etwas mit dem Muskel – bewusst anspannen, nicht nur die Stange bewegen.<br><br>
-        <b>Voller Bewegungsumfang:</b> Immer im vollständigen ROM ausführen. Halbe Bewegungen = halbe Ergebnisse.
+        <b>Ziel:</b> Stabilität, Fettverbrennung und Körperkontrolle – kein Muskelaufbau.<br><br>
+        <b>Frequenz:</b> 4× pro Woche (Mo–Do), Freitag Pause, Sonntag optional MTB/Velo-Tour.<br><br>
+        <b>Dauer:</b> 20–30 Minuten pro Einheit – kurz, intensiv, effizient.<br><br>
+        <b>Progression:</b> Jede Woche etwas mehr Wiederholungen, längere Haltezeit oder bessere Technik – nicht mehr Gewicht.
       </div>
     </div>
     <div class="tip-card">
-      <div class="tip-title">⏱️ Optimale Pausenzeiten</div>
+      <div class="tip-title">🥋 Asiatische Prinzipien (Shaolin)</div>
       <div class="tip-text">
-        <b>Kraft (1–5 Wdh.):</b> 3–5 Minuten Pause<br>
-        <b>Hypertrophie (6–12 Wdh.):</b> 60–120 Sekunden<br>
-        <b>Ausdauer (13+ Wdh.):</b> 30–60 Sekunden<br><br>
-        Für Grundübungen (Bankdrücken, Klimmzüge) mindestens 90–120s einhalten. Zu kurze Pausen reduzieren die Leistung dramatisch.
+        <b>Disziplin:</b> Regelmässigkeit schlägt Perfektion. Lieber kurz und täglich als selten und lang.<br><br>
+        <b>Geduld:</b> Kontrolle kommt vor Intensität. Eine saubere Liegestütze ist mehr wert als zehn schlechte.<br><br>
+        <b>Kontrolle:</b> Bewusst und langsam ausführen. Der Muskel soll die Arbeit machen, nicht der Schwung.<br><br>
+        <b>Konstanz:</b> Kleine Schritte über Wochen bringen grosse Veränderungen.
       </div>
     </div>
     <div class="tip-card">
-      <div class="tip-title">🍗 Ernährung für Muskelaufbau</div>
+      <div class="tip-title">⏱️ Pausenzeiten für Fettverbrennung</div>
       <div class="tip-text">
-        <b>Protein:</b> 1.6–2.2g pro kg Körpergewicht täglich, gleichmäßig auf alle Mahlzeiten verteilen.<br>
-        <b>Kalorienüberschuss:</b> +200–300 kcal täglich für sauberen Muskelaufbau ohne übermäßige Fettzunahme.<br>
-        <b>Post-Workout:</b> Mahlzeit oder Shake innerhalb von 1–2 Stunden nach dem Training.<br>
-        <b>Wasser:</b> Mindestens 3 Liter täglich – mehr an Trainingstagen.
+        <b>Konditionelle Übungen:</b> 30–45 Sekunden Pause (Mountain Climbers, Burpees)<br>
+        <b>Kraftübungen:</b> 45–90 Sekunden Pause (Liegestütze, Dips, Band Rudern)<br>
+        <b>Halteübungen:</b> 30–60 Sekunden Pause (Plank, Hollow Hold, Shaolin Squat)<br><br>
+        Kürzere Pausen erhöhen den Kalorienverbrauch. Qualität der Wiederholungen zählt mehr als Tempo.
+      </div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-title">🍽️ Ernährung für Fettverbrennung</div>
+      <div class="tip-text">
+        <b>Leichtes Kaloriendefizit:</b> –200 bis –300 kcal täglich für saubere Fettverbrennung.<br>
+        <b>Protein:</b> 1.5–2g pro kg Körpergewicht – schützt Muskeln beim Abspecken.<br>
+        <b>Vor dem Training:</b> Leichte Mahlzeit 1–2h vorher. Nicht auf nüchternen Magen bei intensiven Einheiten.<br>
+        <b>Wasser:</b> Mindestens 2.5–3 Liter täglich – mehr an Trainings- und Velotagen.
       </div>
     </div>
     <div class="tip-card">
       <div class="tip-title">😴 Erholung & Regeneration</div>
       <div class="tip-text">
-        <b>Schlaf:</b> 7–9 Stunden sind essentiell. Wachstumshormone werden ausschließlich im Schlaf ausgeschüttet.<br>
-        <b>Muskelkater:</b> DOMS (delayed onset muscle soreness) = normales Zeichen. Leichtes Cardio hilft mehr als vollständige Ruhe.<br>
-        <b>Trainingsfrequenz:</b> Push-/Pull-Muskeln brauchen 48–72h Erholung – Push/Pull-Split ist optimal.<br>
-        <b>Deload:</b> Alle 4–6 Wochen eine leichtere Woche mit 50–60% des Gewichts einplanen.
+        <b>Schlaf:</b> 7–9 Stunden sind essentiell – die wichtigste Regenerationsmassnahme.<br>
+        <b>Muskelkater:</b> Normal nach neuen Übungen. Leichtes Radfahren oder Spazieren hilft mehr als vollständige Ruhe.<br>
+        <b>Deload:</b> Nach dem 4-Wochen-Plan eine Woche leichter trainieren (50–60% Intensität).<br>
+        <b>Dehnen:</b> Nach jeder Einheit 5 Minuten dehnen – Brust, Schultern und Rücken öffnen.
       </div>
     </div>
     <div class="tip-card">
-      <div class="tip-title">📐 Schultergesundheit</div>
+      <div class="tip-title">🛠️ Geräte & Setup</div>
       <div class="tip-text">
-        <b>Face Pulls:</b> Nach jedem Push-Tag 3×15 Face Pulls – die wichtigste Präventivübung für die Schulter.<br>
-        <b>Push/Pull-Ratio:</b> Gleich viel oder mehr Zugvolumen als Druckvolumen. Zu viel Drücken ohne Gegengewicht = Schulterprobleme.<br>
-        <b>Aufwärmen:</b> Niemals kalt mit schwerem Gewicht beginnen. Immer 2 Aufwärmsätze mit 50–60% des Arbeitsgewichts.
+        <b>Benötigt:</b> Nur 1 Widerstandsband + stabiler Stuhl/Sofa für Dips.<br>
+        <b>Band befestigen:</b> Türklinke, Pfeiler oder Treppengeländer für Band Rudern.<br>
+        <b>Tischrudern:</b> Jeder stabile Tisch funktioniert für Body Rows.<br>
+        <b>Boden:</b> Gymnastikmatte empfohlen für Core-Übungen.
       </div>
     </div>
     <div class="tip-card">
       <div class="tip-title">💡 Über diese App</div>
       <div class="tip-text">
-        Oberkörper Trainer · PWA · Offline-fähig<br>
+        Rennradfahrer Oberkörper Trainer · PWA · Offline-fähig<br>
         Alle Daten werden lokal auf diesem Gerät gespeichert.<br><br>
-        <b>Pläne:</b> Push Day, Pull Day, Oberkörper Komplett, Arm-Fokus<br>
-        <b>Übungsbibliothek:</b> ${EXERCISES.length} Übungen mit Ausführungstipps<br>
-        <b>Features:</b> Satz-Tracker, Pausen-Timer (60/90/120s), Trainingslog mit Statistik
+        <b>Pläne:</b> 4-Wochen Progressionsprogramm + Quick Burn + Shaolin Flow<br>
+        <b>Übungsbibliothek:</b> ${EXERCISES.length} Übungen · nur Körpergewicht &amp; 1 Band<br>
+        <b>Features:</b> Satz-Tracker, Pausen-Timer, Trainingslog mit Statistik
       </div>
     </div>
   `;
@@ -964,17 +989,24 @@ function renderReferenz() {
   document.getElementById('header-sub').textContent = '4-Wochen Trainingspläne';
   document.getElementById('tab-referenz').innerHTML = `
     <div class="ref-img-card">
-      <div class="ref-img-label">📋 4-Wochen Plan – Rennradfahrer (mit Shaolin)</div>
-      <div class="ref-img-sub">Asiatische &amp; Shaolin-inspirierte Übungen &middot; Tippe für Vollansicht</div>
+      <div class="ref-img-label">📋 4-Wochen Plan – Progressionsplan (Woche 1–4)</div>
+      <div class="ref-img-sub">Stärke, Stabilität &amp; Körperkontrolle · Shaolin-inspiriert · Tippe für Vollansicht</div>
       <div class="ref-img-wrap">
-        <img src="Training 2.png" alt="4-Wochen Trainingsplan" onclick="openLightbox('Training 2.png')" loading="lazy"/>
+        <img src="Training 1.png" alt="4-Wochen Progressionsplan" onclick="openLightbox('Training 1.png')" loading="lazy"/>
       </div>
     </div>
     <div class="ref-img-card">
-      <div class="ref-img-label">🏋️ Übungsreferenz – Ausführung &amp; häufige Fehler</div>
-      <div class="ref-img-sub">Liegestütze, Band Rudern, Plank, Mountain Climbers, Dips &middot; Tippe für Vollansicht</div>
+      <div class="ref-img-label">📖 Übungsreferenz – Ausführung &amp; häufige Fehler</div>
+      <div class="ref-img-sub">Liegestütze, Band Rudern, Plank, Mountain Climbers, Dips · Tippe für Vollansicht</div>
       <div class="ref-img-wrap">
-        <img src="Training 1.png" alt="Übungsreferenz" onclick="openLightbox('Training 1.png')" loading="lazy"/>
+        <img src="Training 2.png" alt="Übungsreferenz" onclick="openLightbox('Training 2.png')" loading="lazy"/>
+      </div>
+    </div>
+    <div class="ref-img-card">
+      <div class="ref-img-label">🏃 Bodyweight Übersicht – Alle Körpergewicht-Übungen</div>
+      <div class="ref-img-sub">Abs, Rücken, Brust, Trizeps, Bizeps &amp; mehr · Tippe für Vollansicht</div>
+      <div class="ref-img-wrap">
+        <img src="bodyweight-chart.png" alt="Bodyweight Übungen Chart" onclick="openLightbox('bodyweight-chart.png')" loading="lazy"/>
       </div>
     </div>
   `;

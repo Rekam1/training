@@ -1,7 +1,7 @@
 {
-  "name": "Oberkörper Training",
+  "name": "Rennradfahrer Training",
   "short_name": "Training",
-  "description": "Oberkörper Workout Tracker – Push, Pull, Arms & mehr",
+  "description": "Oberkörper Training für Rennradfahrer – Bodyweight & Band, kein Gym",
   "start_url": "/training/index.html",
   "scope": "/training/",
   "display": "standalone",
