@@ -98,6 +98,8 @@
     .lib-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:8px;}
     .lib-tip{background:rgba(249,115,22,0.07);border:1px solid rgba(249,115,22,0.2);border-radius:10px;padding:9px 11px;font-size:12px;color:#fed7aa;line-height:1.55;}
     .lib-tip b{color:var(--accent);}
+    .lib-img-wrap{border-radius:10px;overflow:hidden;margin-bottom:10px;background:rgba(255,255,255,0.04);max-height:200px;}
+    .lib-img{width:100%;max-height:200px;object-fit:cover;display:block;}
     .ex-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
     .ex-pill{font-size:11px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,0.05);color:var(--muted);border:1px solid var(--border);}
 
@@ -237,88 +239,113 @@
 // DATA
 // ============================================================
 
+const BASE_IMG = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
 const EXERCISES = [
   // BRUST
   { id:'bank', group:'brust', name:'Bankdrücken', icon:'🏋️', sets:4, reps:'6–8', note:'Flachbank · Langhantel',
+    img: BASE_IMG + 'Barbell_Bench_Press_-_Medium_Grip/0.jpg',
     desc:'Klassische Grundübung für die gesamte Brustmuskulatur. Schulterblätter zusammenziehen und aktiv auf die Bank drücken, leichte Wölbung im unteren Rücken.',
     tip:'<b>Tipp:</b> Ellbogen nicht komplett ausflaren – ca. 45–70° zum Körper. Stange zur unteren Brusthöhe absenken, nicht zum Hals.' },
   { id:'schraegbank', group:'brust', name:'Schrägbankdrücken', icon:'📐', sets:3, reps:'8–10', note:'30–45° · Kurzhantel oder Langhantel',
+    img: BASE_IMG + 'Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg',
     desc:'Betont den oberen Brustanteil (Pectoralis major, Clavicularportion). Wichtig für eine vollständige, runde Brustmuskulatur.',
     tip:'<b>Tipp:</b> Hanteln über dem oberen Brustkorb absenken, nicht über den Schultern – schont die Schultergelenke erheblich.' },
   { id:'butterfly', group:'brust', name:'Butterfly / Kabelzug Kreuzziehen', icon:'🦋', sets:3, reps:'12–15', note:'Maschine oder Kabel',
+    img: BASE_IMG + 'Cable_Fly/0.jpg',
     desc:'Isolationsübung für die Brustmuskulatur. Ideal als Finisher am Ende des Trainings für maximalen Pump und Dehnung.',
     tip:'<b>Tipp:</b> Ellbogen leicht gebeugt halten. Im Endpunkt Brust bewusst anspannen und 1 Sekunde isometrisch halten.' },
   { id:'dips-brust', group:'brust', name:'Dips (brustbetont)', icon:'⬇️', sets:3, reps:'max', note:'Oberkörper leicht nach vorne neigen',
+    img: BASE_IMG + 'Chest_Dip/0.jpg',
     desc:'Körpergewichtsübung die Brust, Schultern und Trizeps trifft. Durch Vorneigung des Oberkörpers mehr Betonung auf die Brust.',
     tip:'<b>Tipp:</b> Weit genug absenken bis Schultern unter Ellbogenebene – maximale Dehnung der Brust. Breiter Griff verstärkt Brustaktivierung.' },
 
   // SCHULTER
   { id:'schulter-druecken', group:'schulter', name:'Schulterdrücken', icon:'🔺', sets:4, reps:'8–10', note:'Langhantel oder Kurzhantel · stehend oder sitzend',
+    img: BASE_IMG + 'Barbell_Shoulder_Press/0.jpg',
     desc:'Grundübung für den mittleren und vorderen Deltamuskel. Stehend (Militärpress) aktiviert zusätzlich den Core und Stabilisatoren.',
     tip:'<b>Tipp:</b> Stange knapp vor dem Gesicht führen, nie hinter den Kopf – schützt den Nacken. Core aktiv anspannen beim stehenden Drücken.' },
   { id:'seitheben', group:'schulter', name:'Seitheben', icon:'↔️', sets:3, reps:'12–15', note:'Kurzhantel oder Kabel · leichtes Gewicht',
+    img: BASE_IMG + 'Dumbbell_Lateral_Raise/0.jpg',
     desc:'Isolationsübung für den mittleren Deltakopf. Unverzichtbar für Schulterbreite und eine V-Form.',
     tip:'<b>Tipp:</b> Kleiner Finger höher als Daumen (leichte Innenrotation). Nur bis Schulterhöhe heben – höher aktiviert Trapez statt Delta.' },
   { id:'facepull', group:'schulter', name:'Face Pull', icon:'🎯', sets:3, reps:'15–20', note:'Kabel mit Tau · auf Ohrhöhe',
+    img: BASE_IMG + 'Face_Pull/0.jpg',
     desc:'Stärkt den hinteren Deltakopf und die Rotatorenmanschette. Extrem wichtig für Schultergesundheit, Haltung und Verletzungsvorbeugung!',
     tip:'<b>Tipp:</b> Seil zu den Ohren ziehen, Ellbogen hoch und weit. Im Endpunkt Schulterblätter aktiv zusammenkneifen und 1s halten.' },
   { id:'arnold', group:'schulter', name:'Arnold Press', icon:'🌀', sets:3, reps:'10–12', note:'Kurzhantel · sitzend',
+    img: BASE_IMG + 'Arnold_Dumbbell_Press/0.jpg',
     desc:'Von Arnold Schwarzenegger entwickelte Variante. Trainiert alle drei Deltaköpfe durch die Rotationsbewegung am Anfang und Ende.',
     tip:'<b>Tipp:</b> Langsam und kontrolliert ausführen. Hanteln starten mit Handflächen zum Gesicht, drehen beim Drücken nach außen.' },
 
   // RÜCKEN
   { id:'klimmzuege', group:'ruecken', name:'Klimmzüge', icon:'🔝', sets:4, reps:'max', note:'Eigengewicht · Überhand- oder Neutralgriff',
+    img: BASE_IMG + 'Pullup/0.jpg',
     desc:'König der Rückenübungen. Trainiert Latissimus, Bizeps, Trapez und Rhomboiden. Breiter Griff für mehr Breite, enger Griff für mehr Tiefe.',
     tip:'<b>Tipp:</b> Schulterblätter zuerst nach unten deprimieren, dann ziehen. Brust zur Stange führen, nicht nur Kinn drüber. Volle Streckung unten!' },
   { id:'latzug', group:'ruecken', name:'Latzug', icon:'⬇️', sets:4, reps:'8–12', note:'Maschine · breit oder eng',
+    img: BASE_IMG + 'Wide-Grip_Lat_Pulldown/0.jpg',
     desc:'Ideale Alternative oder Ergänzung zu Klimmzügen. Ermöglicht gezielte Gewichtsdosierung und ist auch für Einsteiger geeignet.',
     tip:'<b>Tipp:</b> Stange IMMER zur Brust ziehen – NIE hinter den Kopf! Leicht zurücklehnen (ca. 10°) und zur Oberbrust führen.' },
   { id:'rudern-lang', group:'ruecken', name:'Vorgebeugtes Rudern', icon:'🚣', sets:4, reps:'8–10', note:'Langhantel · 45° Rumpfwinkel',
+    img: BASE_IMG + 'Bent_Over_Barbell_Row/0.jpg',
     desc:'Grundübung für die Rückendicke (Tiefenmuskulatur). Trainiert Trapez, Rhomboiden und Latissimus gleichzeitig.',
     tip:'<b>Tipp:</b> Rücken immer gerade halten – niemals runden! Stange zur unteren Bauchnabe ziehen, Ellbogen eng am Körper.' },
   { id:'seated-row', group:'ruecken', name:'Seated Row (Rudermaschine)', icon:'🪑', sets:3, reps:'10–12', note:'Kabelzug oder Maschine · enger Griff',
+    img: BASE_IMG + 'Seated_Cable_Rows/0.jpg',
     desc:'Gezieltes Training der mittleren Rückenmuskulatur und Rhomboiden. Gut für Verbesserung der Haltung.',
     tip:'<b>Tipp:</b> Im Endpunkt Schulterblätter aktiv zusammendrücken und 1s halten. Oberkörper aufrecht, kein Wippen oder Schwung.' },
 
   // BIZEPS
   { id:'curl-lang', group:'bizeps', name:'Langhantelcurls', icon:'💪', sets:4, reps:'8–10', note:'EZ-Stange oder gerade Stange',
+    img: BASE_IMG + 'Barbell_Curl/0.jpg',
     desc:'Grundübung für maximale Bizepskraft. Die bilaterale Ausführung ermöglicht schwere Gewichte und maximalen Wachstumsreiz.',
     tip:'<b>Tipp:</b> Ellbogen bleiben fixiert an den Hüften – kein Schwung! Langsam ablassen in 3 Sekunden für mehr exzentrischen Reiz.' },
   { id:'curl-kurz', group:'bizeps', name:'Kurzhantelcurls', icon:'🔁', sets:3, reps:'10–12', note:'Alternierend · sitzend oder stehend',
+    img: BASE_IMG + 'Dumbbell_Alternate_Bicep_Curl/0.jpg',
     desc:'Ermöglicht volle Supination (Handflächendrehung) für maximale Bizepsaktivierung – besser als mit der Langhantel.',
     tip:'<b>Tipp:</b> Im oberen Drittel die Hand aktiv nach außen drehen (supinieren). Kurze Pause mit maximaler Anspannung am Endpunkt.' },
   { id:'hammer-curl', group:'bizeps', name:'Hammercurls', icon:'🔨', sets:3, reps:'10–12', note:'Kurzhantel · Neutralgriff (Daumen oben)',
+    img: BASE_IMG + 'Hammer_Curls_v._2/0.jpg',
     desc:'Trainiert den Brachialis (unter dem Bizeps) und Brachioradialis – gibt dem Arm sichtbare Dicke und Fülle.',
     tip:'<b>Tipp:</b> Daumen zeigt immer nach oben während der gesamten Bewegung. Langsam und kontrolliert, kein Schwung.' },
   { id:'konzentration-curl', group:'bizeps', name:'Konzentrationscurls', icon:'🎯', sets:3, reps:'12–15', note:'Kurzhantel · sitzend, Ellbogen am Oberschenkel',
+    img: BASE_IMG + 'Concentration_Curls/0.jpg',
     desc:'Maximale Isolation des Bizeps durch eliminierte Hilfsmuskeln. Entwickelt den Bizepspeak.',
     tip:'<b>Tipp:</b> Ellbogen gegen den Oberschenkel stemmen und fixieren. Nur der Unterarm bewegt sich. Im Endpunkt hart kontrahieren.' },
 
   // TRIZEPS
   { id:'trizeps-kabel', group:'trizeps', name:'Trizepsdrücken Kabel', icon:'📉', sets:4, reps:'10–12', note:'Tau oder Stange · Kabelturm',
+    img: BASE_IMG + 'Pushdown/0.jpg',
     desc:'Isolationsübung für alle drei Trizepsköpfe. Gleichmäßige Spannung über den gesamten Bewegungsradius durch den Kabelzug.',
     tip:'<b>Tipp:</b> Ellbogen fixiert an den Rippen, Oberarme senkrecht. Im Endpunkt Trizeps maximal anspannen. Tau: Hände beim Drücken auseinander.' },
   { id:'dips-trizeps', group:'trizeps', name:'Dips (trizepsbetont)', icon:'💺', sets:3, reps:'max', note:'Körper aufrecht halten',
+    img: BASE_IMG + 'Triceps_Dip/0.jpg',
     desc:'Körpergewichtsübung mit maximaler Trizepsbeteiligung. Durch aufrechte Haltung klarer Fokus auf den Trizeps.',
     tip:'<b>Tipp:</b> Nicht zu weit absenken um Schultern zu schonen. Volle Streckung im Ellbogen für maximale Trizepsaktivierung.' },
   { id:'skull-crusher', group:'trizeps', name:'Skull Crusher', icon:'💀', sets:3, reps:'10–12', note:'EZ-Stange oder Kurzhantel · Flachbank',
+    img: BASE_IMG + 'EZ-Bar_Skullcrusher/0.jpg',
     desc:'Trainiert besonders den langen Trizepskopf in der Dehnung. Sehr effektiv für Trizeps-Masse und Armumfang.',
     tip:'<b>Tipp:</b> Stange zur Stirn/Nase absenken – nicht zu weit hinter den Kopf. Ellbogen nicht nach außen flaren während der Bewegung.' },
   { id:'enges-bank', group:'trizeps', name:'Enges Bankdrücken', icon:'📏', sets:3, reps:'8–10', note:'Langhantel · schulterbreiter Griff',
+    img: BASE_IMG + 'Close-Grip_Barbell_Bench_Press/0.jpg',
     desc:'Kombinationsübung für Trizeps und innere Brust. Erlaubt etwas schwerere Gewichte als reine Isolationsübungen.',
     tip:'<b>Tipp:</b> Griff schulterbreit (zu eng belastet die Handgelenke). Ellbogen eng am Körper halten und zur Brust absenken.' },
 
   // CORE
   { id:'plank', group:'core', name:'Plank', icon:'➡️', sets:3, reps:'45–60s', note:'Ellbogen oder Hände · gerade Linie',
+    img: BASE_IMG + 'Plank/0.jpg',
     desc:'Isometrische Grundübung für die tiefe Core-Muskulatur. Stärkt die Rumpfstabilität, schützt die Wirbelsäule.',
     tip:'<b>Tipp:</b> Po nicht hochstrecken oder durchhängen. Nabel aktiv zur Wirbelsäule einziehen. Körper wie ein Brett von Kopf bis Fersen.' },
   { id:'crunch', group:'core', name:'Crunches', icon:'🌀', sets:3, reps:'15–20', note:'Kontrolliert · kein Schwung',
+    img: BASE_IMG + 'Crunches/0.jpg',
     desc:'Isolationsübung für den geraden Bauchmuskel (Rectus abdominis). Langsam ausgeführt sehr effektiv.',
     tip:'<b>Tipp:</b> Nur bis Schulterblätter vom Boden – keine vollständigen Sit-Ups. Hände locker an den Schläfen, nicht in den Nacken drücken.' },
   { id:'russian-twist', group:'core', name:'Russian Twist', icon:'🔄', sets:3, reps:'20 total', note:'Mit oder ohne Gewicht · Füße angehoben',
+    img: BASE_IMG + 'Russian_Twist/0.jpg',
     desc:'Rotationsbewegung für den schrägen Bauchmuskel (Obliques). Sorgt für Taillendefinition.',
     tip:'<b>Tipp:</b> Rücken leicht nach hinten neigen (ca. 45°). Bewusst mit dem Oberkörper drehen, nicht nur die Arme schwingen.' },
   { id:'hanging-leg-raise', group:'core', name:'Hanging Leg Raise', icon:'🏃', sets:3, reps:'10–15', note:'An der Klimmzugstange',
+    img: BASE_IMG + 'Hanging_Leg_Raise/0.jpg',
     desc:'Anspruchsvolle Core-Übung die den unteren Bauchbereich und Hüftbeuger stark aktiviert.',
     tip:'<b>Tipp:</b> Beine kontrolliert anheben, nicht schwingen. Für Anfänger: erst mit angewinkelten Knien beginnen, dann gestreckte Beine.' },
 ];
@@ -505,6 +532,7 @@ function renderActiveWorkout(el) {
         <svg class="chevron${ex.open ? ' open' : ''}" viewBox="0 0 24 24" width="16" height="16" stroke-width="2" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
       <div class="ex-body${ex.open ? ' open' : ''}">
+        ${ex.img ? `<img src="${ex.img}" alt="${ex.name}" loading="lazy" onerror="this.style.display='none'" style="width:100%;border-radius:10px;object-fit:cover;max-height:140px;display:block;margin-bottom:10px;background:rgba(255,255,255,0.05)"/>` : ''}
         <div class="set-header-row">
           <div></div>
           <div class="set-col-lbl">KG</div>
@@ -747,6 +775,7 @@ function renderUebungen() {
           <svg class="chevron" id="lib-chev-${ex.id}" viewBox="0 0 24 24" width="16" height="16" stroke-width="2" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
         <div class="lib-body" id="lib-body-${ex.id}">
+          ${ex.img ? `<div class="lib-img-wrap"><img class="lib-img" src="${ex.img}" alt="${ex.name}" loading="lazy" onerror="this.parentElement.style.display='none'"/></div>` : ''}
           <div class="ex-pills">
             <span class="ex-pill">${MUSCLE_LABELS[ex.group]}</span>
             <span class="ex-pill">${ex.sets} Sätze</span>
