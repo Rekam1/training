@@ -182,6 +182,7 @@
   <div class="tab-content">
     <section class="tab active" id="tab-training"></section>
     <section class="tab" id="tab-uebungen"></section>
+    <section class="tab" id="tab-ernaehrung"></section>
     <section class="tab" id="tab-referenz"></section>
     <section class="tab" id="tab-verlauf"></section>
     <section class="tab" id="tab-tipps"></section>
@@ -195,6 +196,10 @@
     <button onclick="showTab('uebungen')" id="nav-uebungen">
       <svg viewBox="0 0 24 24"><rect x="2" y="3" width="6" height="4" rx="1"/><rect x="16" y="3" width="6" height="4" rx="1"/><path d="M8 5h8M1 5H2M22 5h1M5 7v10M19 7v10"/><rect x="2" y="17" width="6" height="4" rx="1"/><rect x="16" y="17" width="6" height="4" rx="1"/><path d="M8 19h8"/></svg>
       Übungen
+    </button>
+    <button onclick="showTab('ernaehrung')" id="nav-ernaehrung">
+      <svg viewBox="0 0 24 24"><path d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12 6.5 2 12 2m0 2c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8"/></svg>
+      Ernährung
     </button>
     <button onclick="showTab('referenz')" id="nav-referenz">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
@@ -416,11 +421,12 @@ function showTab(name) {
   document.getElementById('tab-' + name).classList.add('active');
   document.getElementById('nav-' + name).classList.add('active');
   currentTab = name;
-  if (name === 'training')  renderTraining();
-  if (name === 'uebungen')  renderUebungen();
-  if (name === 'referenz')  renderReferenz();
-  if (name === 'verlauf')   renderVerlauf();
-  if (name === 'tipps')     renderTipps();
+  if (name === 'training')     renderTraining();
+  if (name === 'uebungen')     renderUebungen();
+  if (name === 'ernaehrung')   renderErnaehrung();
+  if (name === 'referenz')     renderReferenz();
+  if (name === 'verlauf')      renderVerlauf();
+  if (name === 'tipps')        renderTipps();
 }
 
 // ============================================================
@@ -1033,6 +1039,85 @@ function showToast(msg) {
   t.classList.add('show');
   clearTimeout(toastTimeout);
   toastTimeout = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// ERNÄHRUNG / NUTRITION
+// ============================================================
+
+const DAILY_NUTRITION_PLANS = {
+  rennradtag: {
+    name: 'Rennrad-Trainingstag', icon: '🚴‍♂️', description: 'Erhöhte Kohlenhydrate & Salzaufnahme',
+    calories: 2800, protein: 140, carbs: 350, fat: 80,
+    tips: ['💧 Vor Fahrt: 500ml Wasser + Elektrolyt', '🥤 Während: Alle 45min 200ml Sportelektrolyt', '⚡ Nach Fahrt: Kohlen + Protein in 30min', '🧂 Salzige Snacks – KRITISCH!']
+  },
+  normaltag: {
+    name: 'Normaler Trainingstag', icon: '💪', description: 'Ausgewogene Ernährung',
+    calories: 2400, protein: 120, carbs: 280, fat: 70,
+    tips: ['🥗 Viel Gemüse & Obst', '🍗 Lean Protein bei jeder Mahlzeit', '💧 2-3 Liter Wasser', '⏰ 2-3 Stunden vor Training essen']
+  },
+  regenerationstag: {
+    name: 'Regenerations-/Ruhetag', icon: '😌', description: 'Fokus auf Erholung & Muskelaufbau',
+    calories: 2200, protein: 130, carbs: 240, fat: 75,
+    tips: ['🥛 Erhöhtes Protein für Muskelreparatur', '🧈 Gesunde Fette', '🌙 Leichte Abendmahlzeit', '🍵 Magnesium-reiche Nahrung']
+  }
+};
+
+const MINERALS_INFO = {
+  sodium: { name: 'Natrium', icon: '🧂', daily: 1500 },
+  potassium: { name: 'Kalium', icon: '🍌', daily: 4700 },
+  magnesium: { name: 'Magnesium', icon: '🌰', daily: 420 },
+  calcium: { name: 'Kalzium', icon: '🥛', daily: 1000 },
+  iron: { name: 'Eisen', icon: '🥩', daily: 18 }
+};
+
+let selectedNutritionPlan = 'normaltag';
+
+function renderErnaehrung() {
+  document.getElementById('header-sub').textContent = 'Ernährung für Rennradfahrer';
+  const el = document.getElementById('tab-ernaehrung');
+  
+  let html = '<div class="card-title" style="margin-bottom:14px">📋 Trainingstag wählen</div>';
+  
+  for (const [key, plan] of Object.entries(DAILY_NUTRITION_PLANS)) {
+    html += `<div class="plan-card" onclick="selectNutritionPlan('${key}')" style="${selectedNutritionPlan === key ? 'border-color:var(--accent);background:rgba(249,115,22,0.1)' : ''}">
+      <div class="plan-header">
+        <div class="plan-icon">${plan.icon}</div>
+        <div style="flex:1">
+          <div class="plan-name">${plan.name}</div>
+          <div class="plan-desc">${plan.description}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+  
+  if (selectedNutritionPlan) {
+    const plan = DAILY_NUTRITION_PLANS[selectedNutritionPlan];
+    html += '<div style="margin-top:20px"><div class="card-title">🎯 Tägliche Ziele</div>';
+    html += `<div class="stat-row">
+      <div class="stat-box"><div class="stat-val">${plan.calories}</div><div class="stat-lbl">kcal</div></div>
+      <div class="stat-box"><div class="stat-val">${plan.protein}g</div><div class="stat-lbl">Protein</div></div>
+      <div class="stat-box"><div class="stat-val">${plan.carbs}g</div><div class="stat-lbl">Kohlen</div></div>
+      <div class="stat-box"><div class="stat-val">${plan.fat}g</div><div class="stat-lbl">Fett</div></div>
+    </div></div>`;
+    
+    html += '<div style="margin-top:20px"><div class="card-title">💡 Tipps für heute</div>';
+    plan.tips.forEach(tip => { html += `<div class="tip-card" style="padding:12px;margin-bottom:8px">${tip}</div>`; });
+    html += '</div>';
+    
+    html += '<div style="margin-top:20px"><div class="card-title">💧 Wichtige Mineralstoffe</div>';
+    Object.entries(MINERALS_INFO).slice(0, 5).forEach(([key, m]) => {
+      html += `<div class="card" style="padding:12px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:13px;font-weight:700">${m.icon} ${m.name}</div></div><div style="text-align:right;font-size:16px;font-weight:800;color:var(--accent)">${m.daily} mg</div></div></div>`;
+    });
+    html += '</div>';
+  }
+  
+  el.innerHTML = html;
+}
+
+function selectNutritionPlan(planKey) {
+  selectedNutritionPlan = planKey;
+  renderErnaehrung();
 }
 
 // ============================================================
