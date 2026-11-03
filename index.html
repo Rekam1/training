@@ -435,9 +435,15 @@ function showTab(name) {
 
 function renderTraining() {
   const el = document.getElementById('tab-training');
-  if (!session)            { renderPlanSelection(el); return; }
-  if (session.finished)    { renderFinishScreen(el);  return; }
-  renderActiveWorkout(el);
+  
+  // NEUE STRUKTUR: Muskelgruppen statt Pläne
+  if (!selectedMuscleGroup) {
+    renderMuscleGroupSelection(el);
+  } else if (activeWorkout) {
+    renderWorkoutSession(el);
+  } else {
+    renderMuscleGroupWorkouts(el);
+  }
 }
 
 function renderPlanSelection(el) {
@@ -708,6 +714,169 @@ function renderFinishScreen(el) {
 function newWorkout() {
   session = null;
   renderTraining();
+}
+
+// ============================================================
+// STABILITÄT TRAINER - UI FUNKTIONEN PART 1
+// ============================================================
+
+function renderMuscleGroupSelection(el) {
+  document.getElementById('header-title').textContent = '🏋️ Stabilität Trainer';
+  document.getElementById('header-sub').textContent = 'Nach dem Radfahren direkt trainieren – Profi Rennrad Trainer';
+  
+  let html = '<div class="card-title" style="margin-bottom:14px">🎯 Welchen Bereich trainierst du nach der Fahrt?</div>';
+  
+  const groupIcons = {
+    ruecken_core: '💪',
+    schultern: '🔙',
+    core_bauch: '⚙️',
+    beine_huefte: '🦵',
+    balance: '🧠',
+    rennrad: '🚴'
+  };
+  
+  for (const [key, group] of Object.entries(MUSCLE_GROUPS_STABLE)) {
+    html += `<div class="plan-card" onclick="selectMuscleGroup('${key}')" style="cursor:pointer; border-left:4px solid ${group.color}; display:flex; align-items:center; gap:12px;">
+      <div style="font-size:32px; flex-shrink:0;">${groupIcons[key]}</div>
+      <div style="flex:1">
+        <div class="plan-name">${group.name}</div>
+        <div class="plan-desc">${group.desc}</div>
+      </div>
+      <div style="font-size:20px; flex-shrink:0;">▶</div>
+    </div>`;
+  }
+  
+  el.innerHTML = html;
+}
+
+function selectMuscleGroup(groupKey) {
+  selectedMuscleGroup = groupKey;
+  renderMuscleGroupWorkouts(document.getElementById('tab-training'));
+}
+
+function renderMuscleGroupWorkouts(el) {
+  const group = MUSCLE_GROUPS_STABLE[selectedMuscleGroup];
+  document.getElementById('header-title').textContent = group.name;
+  document.getElementById('header-sub').textContent = 'Wähle deine Trainingsdauer';
+  
+  let html = `<div style="margin-bottom:20px">
+    <div class="card-title">⏱️ Wie viel Zeit hast du?</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:20px;">
+      <div class="plan-card" onclick="startStableWorkout(5)" style="cursor:pointer; padding:20px; text-align:center;">
+        <div style="font-size:32px; margin-bottom:4px;">⚡</div>
+        <div class="plan-name">5 Min</div>
+        <div class="plan-desc">Quick</div>
+      </div>
+      <div class="plan-card" onclick="startStableWorkout(10)" style="cursor:pointer; padding:20px; text-align:center; border-color:var(--accent); border-width:2px;">
+        <div style="font-size:32px; margin-bottom:4px;">💪</div>
+        <div class="plan-name">10 Min</div>
+        <div class="plan-desc">Standard</div>
+      </div>
+      <div class="plan-card" onclick="startStableWorkout(15)" style="cursor:pointer; padding:20px; text-align:center;">
+        <div style="font-size:32px; margin-bottom:4px;">🔥</div>
+        <div class="plan-name">15 Min</div>
+        <div class="plan-desc">Intensiv</div>
+      </div>
+    </div>
+  </div>`;
+  
+  html += `<div class="card-title">📋 Übungen</div>`;
+  const exs10 = STABLE_WORKOUTS[selectedMuscleGroup][10] || [];
+  const groupExercises = MUSCLE_GROUPS_STABLE[selectedMuscleGroup].exercises || {};
+  
+  exs10.forEach((ex, i) => {
+    const img = groupExercises[ex] || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22100%22 height=%22100%22/%3E%3C/svg%3E';
+    html += `<div class="card" style="padding:0; margin-bottom:8px; overflow:hidden;">
+      <img src="${img}" style="width:100%; height:200px; object-fit:cover; display:block;">
+      <div style="padding:12px; font-weight:600;">${i+1}. ${ex}</div>
+    </div>`;
+  });
+  
+  html += `<button class="btn btn-ghost" onclick="selectedMuscleGroup=null; renderMuscleGroupSelection(document.getElementById('tab-training'));" style="margin-top:16px;">↩️ Zurück</button>`;
+  
+  el.innerHTML = html;
+}
+
+function startStableWorkout(duration) {
+  workoutDuration = duration;
+  activeWorkoutStable = { 
+    muscleGroup: selectedMuscleGroup, 
+    duration, 
+    startTime: Date.now(), 
+    exercises: STABLE_WORKOUTS[selectedMuscleGroup][duration]
+  };
+  
+  if (workoutInterval) clearInterval(workoutInterval);
+  workoutInterval = setInterval(() => {
+    renderWorkoutSession(document.getElementById('tab-training'));
+  }, 100);
+  
+  renderWorkoutSession(document.getElementById('tab-training'));
+}
+
+function renderWorkoutSession(el) {
+  const group = MUSCLE_GROUPS_STABLE[selectedMuscleGroup];
+  const elapsed = Math.floor((Date.now() - activeWorkoutStable.startTime) / 1000);
+  const remaining = Math.max(0, activeWorkoutStable.duration * 60 - elapsed);
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
+  
+  document.getElementById('header-title').textContent = '⏱️ Training läuft';
+  document.getElementById('header-sub').textContent = `${mins}:${String(secs).padStart(2, '0')}`;
+  
+  let html = `<div style="text-align:center; padding:30px 20px; background:rgba(249,115,22,0.1); border-radius:14px; border:2px solid var(--accent); margin-bottom:20px;">
+    <div style="font-size:56px; font-weight:800; color:var(--accent);">${mins}:${String(secs).padStart(2, '0')}</div>
+    <div style="font-size:13px; color:var(--muted); margin-top:8px;">von ${activeWorkoutStable.duration} Minuten</div>
+    <div style="font-size:14px; font-weight:700; color:var(--text); margin-top:12px;">${group.name}</div>
+  </div>`;
+  
+  html += `<div class="card-title">📋 Heute trainierst du:</div>`;
+  const groupExsWorkout = MUSCLE_GROUPS_STABLE[selectedMuscleGroup].exercises || {};
+  activeWorkoutStable.exercises.forEach((ex, i) => {
+    const img = groupExsWorkout[ex] || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22100%22 height=%22100%22/%3E%3C/svg%3E';
+    const tip = EXERCISE_TIPS_STABLE[ex] || 'Korrekte Form ist wichtig!';
+    html += `<div class="card" style="padding:0; margin-bottom:12px; overflow:hidden;">
+      <img src="${img}" style="width:100%; height:180px; object-fit:cover; display:block;">
+      <div style="padding:14px;">
+        <div style="font-weight:600; color:var(--accent); margin-bottom:6px;">${i+1}. ${ex}</div>
+        <div style="font-size:12px; color:var(--muted); line-height:1.4;">💡 ${tip}</div>
+      </div>
+    </div>`;
+  });
+  
+  html += `<button class="btn btn-ok" onclick="finishStableWorkout();" style="margin-top:16px; margin-bottom:8px;">✅ Training beenden</button>`;
+  html += `<button class="btn btn-danger" onclick="cancelStableWorkout();">Abbrechen</button>`;
+  
+  el.innerHTML = html;
+  
+  if (remaining <= 0) {
+    finishStableWorkout();
+  }
+}
+
+function finishStableWorkout() {
+  if (workoutInterval) clearInterval(workoutInterval);
+  
+  trainingLog.unshift({
+    id: Date.now(),
+    date: new Date().toISOString(),
+    planName: `${MUSCLE_GROUPS_STABLE[selectedMuscleGroup].name} (${workoutDuration}min)`,
+    duration: workoutDuration,
+    totalSets: 0,
+    totalVolume: 0
+  });
+  saveData();
+  
+  showToast(`✅ ${workoutDuration}min Stabilität-Training gespeichert!`);
+  activeWorkoutStable = null;
+  selectedMuscleGroup = null;
+  renderTraining();
+}
+
+function cancelStableWorkout() {
+  if (workoutInterval) clearInterval(workoutInterval);
+  activeWorkoutStable = null;
+  renderMuscleGroupWorkouts(document.getElementById('tab-training'));
 }
 
 // ============================================================
@@ -1040,6 +1209,142 @@ function showToast(msg) {
   clearTimeout(toastTimeout);
   toastTimeout = setTimeout(() => t.classList.remove('show'), 2500);
 }
+
+// ============================================================
+// STABILITÄT TRAINER - DATEN
+// ============================================================
+
+const MUSCLE_GROUPS_STABLE = {
+  ruecken_core: { 
+    name: '💪 Rücken & Core', 
+    desc: 'Haltung & Stabilität', 
+    color: '#ff6b35',
+    exercises: {
+      'Plank 30s': 'https://images.unsplash.com/photo-1518611505868-d7b8b54a6e3b?w=500&h=300&fit=crop&q=80',
+      'Dead Bug 10': 'https://images.unsplash.com/photo-1581009146989-51e3b1865e49?w=500&h=300&fit=crop&q=80',
+      'Superman 20s': 'https://images.unsplash.com/photo-1551958219-acbc608c6c8d?w=500&h=300&fit=crop&q=80',
+      'Band Rudern 12': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Seitenplank 25s': 'https://images.unsplash.com/photo-1552810820-6c87d39c73ec?w=500&h=300&fit=crop&q=80'
+    }
+  },
+  schultern: { 
+    name: '🔙 Schultern & Nacken', 
+    desc: 'Schulterstabilität', 
+    color: '#e94b3c',
+    exercises: {
+      'Band Lateral 12': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Pull Apart 15': 'https://images.unsplash.com/photo-1546483213-97ec38941aff?w=500&h=300&fit=crop&q=80',
+      'Face Pull 12': 'https://images.unsplash.com/photo-1602491453631-e2a5ad90a131?w=500&h=300&fit=crop&q=80',
+      'Reverse Fly 12': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Wall Slides 10': 'https://images.unsplash.com/photo-1535803377185-51fc8ddf5d58?w=500&h=300&fit=crop&q=80'
+    }
+  },
+  core_bauch: { 
+    name: '⚙️ Core & Bauch', 
+    desc: 'Kernstabilität', 
+    color: '#f7931e',
+    exercises: {
+      'Mountain Climbers 20': 'https://images.unsplash.com/photo-1552821206-e4c929561f23?w=500&h=300&fit=crop&q=80',
+      'Bicycle Crunch 20': 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=300&fit=crop&q=80',
+      'Flutter Kicks 30s': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Pallof 10': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Plank 45s': 'https://images.unsplash.com/photo-1518611505868-d7b8b54a6e3b?w=500&h=300&fit=crop&q=80'
+    }
+  },
+  beine_huefte: { 
+    name: '🦵 Beine & Hüfte', 
+    desc: 'Balance & Kraft', 
+    color: '#6c5b7b',
+    exercises: {
+      'Single Leg Squat 8': 'https://images.unsplash.com/photo-1541534759336-2b5b1e67fb1f?w=500&h=300&fit=crop&q=80',
+      'Glute Bridge 12': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Single Leg RDL 10': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Calf Raise 15': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Side Lunge 10': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80'
+    }
+  },
+  balance: { 
+    name: '🧠 Balance & Koordination', 
+    desc: 'Propriozeption', 
+    color: '#2c5f8d',
+    exercises: {
+      'Single Leg Stand 30s': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&h=300&fit=crop&q=80',
+      'BOSU Ball 30s': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Tandem Stance 20s': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Eyes Closed 15s': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Wobble Board 45s': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80'
+    }
+  },
+  rennrad: { 
+    name: '🚴 Rennrad-Spezifisch', 
+    desc: 'Für dein Pendeln', 
+    color: '#d32f2f',
+    exercises: {
+      'Aero Position 30s': 'https://images.unsplash.com/photo-1541534759336-2b5b1e67fb1f?w=500&h=300&fit=crop&q=80',
+      'Hip Opener 30s': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Out-of-Saddle 20': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Shoulder Mobility 10': 'https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=500&h=300&fit=crop&q=80',
+      'Core Combo 3x': 'https://images.unsplash.com/photo-1518611505868-d7b8b54a6e3b?w=500&h=300&fit=crop&q=80'
+    }
+  }
+};
+
+const STABLE_WORKOUTS = {
+  ruecken_core: {
+    5: ['Plank 30s', 'Dead Bug 10', 'Superman 20s'],
+    10: ['Plank 45s', 'Band Rudern 12', 'Dead Bug 12', 'Seitenplank 25s'],
+    15: ['Plank 60s', 'Band Rudern 15', 'Dead Bug 15', 'Seitenplank 30s', 'Superman 30s']
+  },
+  schultern: {
+    5: ['Band Lateral 12', 'Pull Apart 15', 'Wall Slides 10'],
+    10: ['Band Lateral 15', 'Face Pull 12', 'Pull Apart 15', 'Reverse Fly 12'],
+    15: ['Band Lateral 15', 'Face Pull 15', 'Pull Apart 15', 'Reverse Fly 12', 'Wall Slides 10']
+  },
+  core_bauch: {
+    5: ['Mountain Climbers 20', 'Plank 30s', 'Bicycle Crunch 15'],
+    10: ['Mountain Climbers 20', 'Bicycle Crunch 20', 'Flutter Kicks 30s', 'Pallof 10'],
+    15: ['Mountain Climbers 20', 'Bicycle Crunch 20', 'Flutter Kicks 45s', 'Pallof 12', 'Ab Wheel 10']
+  },
+  beine_huefte: {
+    5: ['Single Leg Squat 8', 'Glute Bridge 12', 'Calf Raise 15'],
+    10: ['Single Leg Squat 10', 'Glute Bridge 15', 'Single Leg RDL 10', 'Calf Raise 20'],
+    15: ['Single Leg Squat 12', 'Glute Bridge 15', 'Single Leg RDL 12', 'Calf Raise 20', 'Side Lunge 10']
+  },
+  balance: {
+    5: ['Single Leg Stand 30s', 'Tandem Stance 20s', 'Eyes Closed 15s'],
+    10: ['Single Leg Stand 45s', 'BOSU Ball 30s', 'Tandem Stance 30s', 'Eyes Closed 20s'],
+    15: ['Single Leg Stand 60s', 'BOSU Ball 45s', 'Tandem Stance 45s', 'Eyes Closed 30s', 'Wobble Board 45s']
+  },
+  rennrad: {
+    5: ['Aero Position 30s', 'Hip Opener 30s', 'Core Combo 3x'],
+    10: ['Aero Position 45s', 'Hip Opener 60s', 'Out-of-Saddle 20', 'Shoulder Mobility 10'],
+    15: ['Aero Position 60s', 'Hip Opener 90s', 'Out-of-Saddle 25', 'Lower Back 45s', 'Shoulder Mobility 12']
+  }
+};
+
+const EXERCISE_TIPS_STABLE = {
+  'Plank 30s': 'Schultern über Ellbogen, Körper gerade wie ein Brett, Po nicht hochstrecken.',
+  'Dead Bug 10': 'Auf Rücken liegen, Arm & Bein diagonal. Rücken flach halten.',
+  'Superman 20s': 'Brust & Beine abheben, Nacken neutral. 2-3 Sekunden halten.',
+  'Band Rudern 12': 'Schulterblätter zusammen, Band zum Körper ziehen.',
+  'Seitenplank 25s': 'Hüfte gerade halten, nicht sausen lassen.',
+  'Band Lateral 12': 'Schulter nach oben, langsam senken, kontrolliert.',
+  'Pull Apart 15': 'Band auseinanderziehen, Schultern nach hinten.',
+  'Face Pull 12': 'Ellbogen hoch, Schulterblätter zusammen.',
+  'Mountain Climbers 20': 'Po nicht hochstrecken, schnelle Beine.',
+  'Bicycle Crunch 20': 'Langsam & kontrolliert, Nacken nicht belasten.',
+  'Flutter Kicks 30s': 'Rücken flach, kleine Bewegungen, Bauch angespannt.',
+  'Single Leg Squat 8': 'Mit Stütze beginnen, Knie über Zehe.',
+  'Glute Bridge 12': 'Glutes anspannen, Hüfte hochdrücken.',
+  'Single Leg Stand 30s': 'Blick auf Punkt fixieren, stabiler Stand.',
+  'Aero Position 30s': 'In Aerodynamik-Position halten, Core aktiv.',
+  'Hip Opener 30s': 'Tief & entspannt, kein Schmerz. Nach Fahrt WICHTIG!'
+};
+
+let selectedMuscleGroup = null;
+let workoutDuration = 10;
+let activeWorkoutStable = null;
+let workoutInterval = null;
 
 // ============================================================
 // ERNÄHRUNG / NUTRITION

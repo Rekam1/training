@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Training & Ernährung – Rennradfahrer</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <meta name="theme-color" content="#0f172a"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Training"/>
+</head>
+<body>
+<div id="app">
+  <!-- Header -->
+  <div class="app-header">
+    <h1 id="header-title">🏋️ Training</h1>
+    <div class="sub" id="header-sub">Oberkörper-Trainer für Rennradfahrer</div>
+  </div>
+
+  <!-- Content Tabs -->
+  <div class="tab-content">
+    <!-- Training Tab -->
+    <div class="tab active" id="tab-training"></div>
+
+    <!-- Übungen Tab -->
+    <div class="tab" id="tab-uebungen"></div>
+
+    <!-- Ernährung Tab -->
+    <div class="tab" id="tab-nutrition"></div>
+
+    <!-- Verlauf Tab -->
+    <div class="tab" id="tab-verlauf"></div>
+
+    <!-- Tipps Tab -->
+    <div class="tab" id="tab-tipps"></div>
+  </div>
+
+  <!-- Rest Timer Banner -->
+  <div class="rest-banner" id="rest-banner">
+    <div class="rest-label">⏱️ Pause – nächster Satz in</div>
+    <div class="rest-row">
+      <div class="rest-countdown" id="rest-countdown">90</div>
+      <div class="rest-bar-wrap"><div class="rest-bar-fill" id="rest-bar" style="width:100%"></div></div>
+      <button class="rest-skip" onclick="skipRest()">Überspringen</button>
+    </div>
+    <div class="rest-dur-btns">
+      <button class="rest-dur-btn" onclick="setRestDur(60)">60s</button>
+      <button class="rest-dur-btn sel" onclick="setRestDur(90)">90s</button>
+      <button class="rest-dur-btn" onclick="setRestDur(120)">120s</button>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button onclick="showTab('training')" id="nav-training" class="active">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      Training
+    </button>
+    <button onclick="showTab('uebungen')" id="nav-uebungen">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      Übungen
+    </button>
+    <button onclick="showTab('nutrition')" id="nav-nutrition">
+      <svg viewBox="0 0 24 24"><path d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12 6.5 2 12 2m0 2c-4.4 0-8 3.6-8 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8"/></svg>
+      Ernährung
+    </button>
+    <button onclick="showTab('verlauf')" id="nav-verlauf">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Verlauf
+    </button>
+    <button onclick="showTab('tipps')" id="nav-tipps">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Tipps
+    </button>
+  </nav>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-close" onclick="closeLightbox()">✕</div>
+  <img id="lightbox-img" src="" alt=""/>
+</div>
+
+<!-- Scripts -->
+<script src="nutrition-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
